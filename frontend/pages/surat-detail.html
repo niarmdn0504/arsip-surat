@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detail Surat — Arsip Surat Sekolah</title>
+  <meta name="sb-url" content="https://cjgqmdymyybuldbypryf.supabase.co">
+  <meta name="sb-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqZ3FtZHlteXlidWxkYnlwcnlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTE2NTAsImV4cCI6MjA5NTM2NzY1MH0.YKMIf1LcCJxGQzEc3RexMqybtB-Ma-8XCpbv9NP3-VY">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo-icon">🏫</div>
+      <div class="logo-text"><h2>Arsip Surat</h2><p>Manajemen Surat Sekolah</p></div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Menu Utama</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+    <a href="surat.html" class="nav-item active"><span class="nav-icon">📋</span> Semua Surat</a>
+    <a href="surat.html?jenis=masuk" class="nav-item"><span class="nav-icon">📥</span> Surat Masuk</a>
+    <a href="surat.html?jenis=keluar" class="nav-item"><span class="nav-icon">📤</span> Surat Keluar</a>
+    <a href="laporan.html" class="nav-item"><span class="nav-icon">📈</span> Laporan</a>
+    <div class="nav-label" style="margin-top:12px;display:none" id="admin-section">Administrasi</div>
+    <a href="users.html" class="nav-item" id="nav-users" style="display:none"><span class="nav-icon">👥</span> Data Pengguna</a>
+    <a href="activity-log.html" class="nav-item" id="nav-log" style="display:none"><span class="nav-icon">📝</span> Log Aktivitas</a>
+    <a href="pengaturan.html" class="nav-item" id="nav-pengaturan" style="display:none"><span class="nav-icon">⚙️</span> Pengaturan</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="profil.html" class="nav-item"><span class="nav-icon">👤</span> Profil Saya</a>
+    <button onclick="logout()" class="nav-item" style="width:100%;border:none;background:none;cursor:pointer;color:rgba(255,255,255,0.5)">
+      <span class="nav-icon">🚪</span> Keluar
+    </button>
+  </div>
+</aside>
+
+<header class="navbar">
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <div style="flex:1">
+    <div class="navbar-title">Detail Surat</div>
+    <div class="navbar-sub">Informasi lengkap surat</div>
+  </div>
+  <a href="surat.html" class="btn btn-secondary btn-sm">← Kembali</a>
+  <!-- Notifikasi Bell -->
+  <div style="position:relative">
+    <button onclick="toggleNotif()" id="btn-notif" style="width:36px;height:36px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;position:relative">
+      🔔
+      <span id="notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:#ef4444;color:white;font-size:10px;font-weight:700;align-items:center;justify-content:center">0</span>
+    </button>
+    <!-- Dropdown Notifikasi -->
+    <div id="notif-dropdown" style="display:none;position:absolute;top:44px;right:0;width:320px;background:white;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);border:1px solid #e2e8f0;z-index:200;overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:14px;font-weight:700">Notifikasi</span>
+        <button onclick="bacaSemua()" style="font-size:12px;color:#3b82f6;background:none;border:none;cursor:pointer">Tandai Semua Dibaca</button>
+      </div>
+      <div id="notif-list" style="max-height:320px;overflow-y:auto">
+        <div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px">Memuat...</div>
+      </div>
+    </div>
+  </div>
+  <div class="user-chip">
+    <div class="user-avatar" id="user-avatar">A</div>
+    <div class="hidden sm:block">
+      <div style="font-size:13px;font-weight:600" id="user-name">-</div>
+      <div style="font-size:11px;color:#64748b" id="user-role">-</div>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+<div class="page-content animate-in">
+
+  <div id="loading-state" style="text-align:center;padding:60px">
+    <div class="spinner spinner-dark" style="margin:0 auto 12px;width:32px;height:32px;border-width:3px"></div>
+    <p style="color:#64748b;font-size:14px">Memuat data surat...</p>
+  </div>
+
+  <div id="detail-content" style="display:none">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- INFO UTAMA -->
+      <div class="lg:col-span-2">
+        <div class="card" style="padding:28px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+                <span id="d-badge-jenis"></span>
+                <span id="d-badge-kategori"></span>
+              </div>
+              <h1 style="font-size:20px;font-weight:800;color:#0f172a" id="d-perihal">—</h1>
+            </div>
+            <div style="display:flex;gap:8px" id="aksi-buttons">
+              <button onclick="editSurat()" class="btn btn-secondary btn-sm">✏️ Edit</button>
+              <button onclick="hapusSurat()" class="btn btn-sm" style="background:#fef2f2;color:#ef4444" id="btn-hapus">🗑 Hapus</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin-bottom:4px">Nomor Surat</div>
+              <div style="font-size:15px;font-weight:700;color:#1e40af" id="d-nomor">—</div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin-bottom:4px">Tanggal Surat</div>
+              <div style="font-size:14px;font-weight:600" id="d-tanggal">—</div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin-bottom:4px">Pengirim</div>
+              <div style="font-size:14px" id="d-pengirim">—</div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin-bottom:4px">Penerima / Tujuan</div>
+              <div style="font-size:14px" id="d-penerima">—</div>
+            </div>
+            <div id="group-terima">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin-bottom:4px">Tanggal Diterima</div>
+              <div style="font-size:14px" id="d-tanggal-terima">—</div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin-bottom:4px">Tahun</div>
+              <div style="font-size:14px" id="d-tahun">—</div>
+            </div>
+          </div>
+
+          <div style="margin-top:20px;padding-top:20px;border-top:1px solid #f1f5f9">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin-bottom:6px">Keterangan</div>
+            <p style="font-size:14px;color:#475569;line-height:1.7" id="d-keterangan">—</p>
+          </div>
+
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9;display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:#94a3b8">Ditambahkan oleh</span>
+            <span style="font-size:12px;font-weight:600;color:#475569" id="d-created-by">—</span>
+            <span style="font-size:11px;color:#94a3b8">•</span>
+            <span style="font-size:11px;color:#94a3b8" id="d-created-at">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR KANAN -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- FILE PDF -->
+        <div class="card" style="padding:20px" id="card-file">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:14px">📄 File Surat (PDF)</h3>
+          <div id="file-section">
+            <div style="text-align:center;padding:20px 0;color:#94a3b8">
+              <div style="font-size:32px;margin-bottom:8px">📭</div>
+              <p style="font-size:13px">Tidak ada file</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PREVIEW PDF -->
+        <div class="card" style="padding:0;overflow:hidden;display:none" id="pdf-preview-card">
+          <div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
+            <h3 style="font-size:14px;font-weight:700">Preview PDF</h3>
+            <button onclick="togglePreview()" style="font-size:12px;color:#3b82f6;background:none;border:none;cursor:pointer">Tutup</button>
+          </div>
+          <iframe id="pdf-inline" style="width:100%;height:480px;border:none;display:block"></iframe>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="error-state" style="display:none">
+    <div class="empty-state">
+      <div class="empty-icon">❌</div>
+      <h3>Surat Tidak Ditemukan</h3>
+      <p>Surat yang dicari tidak ada atau telah dihapus.</p>
+      <a href="surat.html" class="btn btn-primary" style="margin-top:16px">← Kembali ke Daftar</a>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+<script src="../js/supabase-upload.js"></script>
+<script src="../js/branding.js"></script>
+<script src="../js/api.js"></script>
+<script>
+  if (!requireAuth()) throw new Error();
+  const user = getUser();
+  setUserInfo();
+  if (user?.role === 'admin') {
+    document.getElementById('admin-section').style.display = 'block';
+    document.getElementById('nav-users').style.display = 'flex';
+    document.getElementById('nav-log').style.display = 'flex';
+    document.getElementById('nav-pengaturan').style.display = 'flex';
+  }
+
+  const toggleSidebar = () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  };
+  const closeSidebar = () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  };
+
+  const id = new URLSearchParams(window.location.search).get('id');
+  let suratData = null;
+
+  const loadDetail = async () => {
+    if (!id) { showError(); return; }
+    const res = await apiFetch(`/surat/${id}`);
+    if (!res?.ok) { showError(); return; }
+
+    suratData = res.data.data;
+    renderDetail(suratData);
+  };
+
+  const renderDetail = (s) => {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('detail-content').style.display = 'block';
+
+    document.getElementById('d-perihal').textContent = s.perihal;
+    document.getElementById('d-badge-jenis').innerHTML = badgeJenis(s.jenis);
+    document.getElementById('d-badge-kategori').innerHTML = badgeKategori(s.kategori);
+    document.getElementById('d-nomor').textContent = s.nomor_surat;
+    document.getElementById('d-tanggal').textContent = formatDate(s.tanggal_surat);
+    document.getElementById('d-pengirim').textContent = s.pengirim || '-';
+    document.getElementById('d-penerima').textContent = s.penerima || '-';
+    document.getElementById('d-tahun').textContent = s.tahun || '-';
+    document.getElementById('d-keterangan').textContent = s.keterangan || 'Tidak ada keterangan.';
+    document.getElementById('d-created-by').textContent = s.users?.nama || 'System';
+    document.getElementById('d-created-at').textContent = formatDate(s.created_at);
+
+    if (s.jenis === 'masuk') {
+      document.getElementById('d-tanggal-terima').textContent = formatDate(s.tanggal_terima) || '-';
+    } else {
+      document.getElementById('group-terima').style.display = 'none';
+    }
+
+    // Hapus button hanya untuk admin
+    if (user?.role !== 'admin') {
+      document.getElementById('btn-hapus').style.display = 'none';
+    }
+
+    // File PDF
+    if (s.file_path) {
+      document.getElementById('file-section').innerHTML = `
+        <div style="background:#f8fafc;border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px">
+          <div style="font-size:28px">📄</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.file_path.split('/').pop()}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:2px">PDF Document</div>
+          </div>
+        </div>
+        <button onclick="showPreview('${s.file_path}')" class="btn btn-primary btn-sm" style="width:100%;margin-top:10px;justify-content:center">
+          👁 Preview PDF
+        </button>
+        <button onclick="downloadPdf('${s.file_path}','${s.nomor_surat || 'surat'}')" class="btn btn-secondary btn-sm" style="width:100%;margin-top:6px;justify-content:center">
+          ⬇ Download PDF
+        </button>
+      `;
+    }
+  };
+
+  const showPreview = async (filePath) => {
+    if (!filePath) { showToast('File PDF tidak tersedia', 'warning'); return; }
+    showToast('Memuat PDF...', 'info');
+    // Generate signed URL langsung dari browser
+    const url = await getSignedUrl(filePath);
+    if (!url) { showToast('Tidak bisa memuat PDF', 'error'); return; }
+    document.getElementById('pdf-inline').src = url;
+    document.getElementById('pdf-preview-card').style.display = 'block';
+    document.getElementById('pdf-preview-card').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const togglePreview = () => {
+    const card = document.getElementById('pdf-preview-card');
+    card.style.display = 'none';
+    document.getElementById('pdf-inline').src = '';
+  };
+
+  const editSurat = () => {
+    window.location.href = `surat.html?edit=${id}`;
+  };
+
+  const hapusSurat = async () => {
+    const ok = await confirmDelete(`Hapus surat "${suratData?.nomor_surat}"?`);
+    if (!ok) return;
+    const res = await apiFetch(`/surat/${id}`, { method: 'DELETE' });
+    if (res?.ok) {
+      showToast('Surat berhasil dihapus', 'success');
+      setTimeout(() => window.location.href = 'surat.html', 1500);
+    } else {
+      showToast(res?.data?.error || 'Gagal menghapus surat', 'error');
+    }
+  };
+
+  const showError = () => {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-state').style.display = 'block';
+  };
+
+  // Download PDF dengan generate signed URL dulu
+  const downloadPdf = async (filePath, namaFile) => {
+    if (!filePath) return;
+    showToast('Menyiapkan download...', 'info');
+    const url = await getSignedUrl(filePath);
+    if (!url) { showToast('Gagal download PDF', 'error'); return; }
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = namaFile + '.pdf';
+    a.target = '_blank';
+    a.click();
+  };
+
+  loadDetail();
+
+  // ============ NOTIFIKASI ============
+  let notifOpen = false;
+  const loadNotifikasi = async () => {
+    const res = await apiFetch('/notifikasi');
+    if (!res?.ok) return;
+    const { data, belumDibaca } = res.data;
+    const badge = document.getElementById('notif-badge');
+    if (belumDibaca > 0) {
+      badge.style.display = 'flex';
+      badge.textContent = belumDibaca > 9 ? '9+' : belumDibaca;
+    } else {
+      badge.style.display = 'none';
+    }
+    renderNotif(data);
+  };
+
+  const renderNotif = (data) => {
+    const el = document.getElementById('notif-list');
+    if (!data?.length) {
+      el.innerHTML = '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px">Tidak ada notifikasi</div>';
+      return;
+    }
+    el.innerHTML = data.map(n => `
+      <div onclick="klikNotif('${n.id}','${n.surat_id || ''}')" style="padding:12px 16px;border-bottom:1px solid #f8fafc;cursor:pointer;background:${n.dibaca ? 'white' : '#f0f9ff'};transition:background 0.1s" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='${n.dibaca ? 'white' : '#f0f9ff'}'">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="font-size:20px;flex-shrink:0">${n.tipe === 'surat_masuk' ? '📥' : 'ℹ️'}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:${n.dibaca ? '500' : '700'};color:#0f172a">${n.judul}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.pesan || ''}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px">${formatDateShort(n.created_at)}</div>
+          </div>
+          ${!n.dibaca ? '<div style="width:8px;height:8px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:4px"></div>' : ''}
+        </div>
+      </div>
+    `).join('');
+  };
+
+  const toggleNotif = () => {
+    const dd = document.getElementById('notif-dropdown');
+    notifOpen = !notifOpen;
+    dd.style.display = notifOpen ? 'block' : 'none';
+    if (notifOpen) loadNotifikasi();
+  };
+
+  const klikNotif = async (id, suratId) => {
+    await apiFetch(`/notifikasi/${id}/baca`, { method: 'PUT' });
+    document.getElementById('notif-dropdown').style.display = 'none';
+    notifOpen = false;
+    if (suratId) window.location.href = `surat-detail.html?id=${suratId}`;
+    loadNotifikasi();
+  };
+
+  const bacaSemua = async () => {
+    await apiFetch('/notifikasi/baca-semua', { method: 'PUT' });
+    loadNotifikasi();
+    showToast('Semua notifikasi sudah dibaca', 'success');
+  };
+
+  // Tutup dropdown kalau klik di luar
+  document.addEventListener('click', (e) => {
+    const btn = document.getElementById('btn-notif');
+    const dd = document.getElementById('notif-dropdown');
+    if (notifOpen && btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+      dd.style.display = 'none';
+      notifOpen = false;
+    }
+  });
+
+  // Load notifikasi saat halaman dibuka
+  loadNotifikasi();
+  // Refresh notifikasi setiap 2 menit
+  setInterval(loadNotifikasi, 120000);
+
+</script>
+</body>
+</html>

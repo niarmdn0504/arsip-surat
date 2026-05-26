@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Aktivitas — Arsip Surat Sekolah</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo-icon">🏫</div>
+      <div class="logo-text"><h2>Arsip Surat</h2><p>Manajemen Surat Sekolah</p></div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Menu Utama</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+    <a href="surat.html" class="nav-item"><span class="nav-icon">📋</span> Semua Surat</a>
+    <a href="surat.html?jenis=masuk" class="nav-item"><span class="nav-icon">📥</span> Surat Masuk</a>
+    <a href="surat.html?jenis=keluar" class="nav-item"><span class="nav-icon">📤</span> Surat Keluar</a>
+    <a href="laporan.html" class="nav-item"><span class="nav-icon">📈</span> Laporan</a>
+    <div class="nav-label" style="margin-top:12px">Administrasi</div>
+    <a href="users.html" class="nav-item"><span class="nav-icon">👥</span> Data Pengguna</a>
+    <a href="activity-log.html" class="nav-item active"><span class="nav-icon">📝</span> Log Aktivitas</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="profil.html" class="nav-item"><span class="nav-icon">👤</span> Profil Saya</a>
+    <button onclick="logout()" class="nav-item" style="width:100%;border:none;background:none;cursor:pointer;color:rgba(255,255,255,0.5)">
+      <span class="nav-icon">🚪</span> Keluar
+    </button>
+  </div>
+</aside>
+
+<header class="navbar">
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <div style="flex:1">
+    <div class="navbar-title">Log Aktivitas</div>
+    <div class="navbar-sub">Rekam jejak semua aksi pengguna</div>
+  </div>
+  <div class="user-chip">
+    <div class="user-avatar" id="user-avatar">A</div>
+    <div class="hidden sm:block">
+      <div style="font-size:13px;font-weight:600" id="user-name">-</div>
+      <div style="font-size:11px;color:#64748b" id="user-role">-</div>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+<div class="page-content animate-in">
+
+  <div class="card">
+    <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <h3 style="font-size:15px;font-weight:700">📝 Riwayat Aktivitas</h3>
+      <div class="search-bar">
+        <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-log" placeholder="Cari nama atau aksi..." oninput="filterLog(this.value)">
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Waktu</th>
+            <th>Pengguna</th>
+            <th>Aksi</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-log">
+          <tr><td colspan="4" style="text-align:center;padding:40px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+<script src="../js/branding.js"></script>
+<script src="../js/api.js"></script>
+<script>
+  if (!requireAuth()) throw new Error();
+  const user = getUser();
+  if (user?.role !== 'admin') window.location.href = 'dashboard.html';
+  setUserInfo();
+
+  const toggleSidebar = () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  };
+  const closeSidebar = () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  };
+
+  let allLog = [];
+
+  const aksiIcon = {
+    'LOGIN': '🔑', 'LOGOUT': '🚪',
+    'TAMBAH_SURAT': '➕', 'EDIT_SURAT': '✏️', 'HAPUS_SURAT': '🗑',
+    'GANTI_PASSWORD': '🔒', 'TAMBAH_USER': '👤', 'HAPUS_USER': '❌'
+  };
+  const aksiColor = {
+    'LOGIN': 'bg-green-100 text-green-700',
+    'LOGOUT': 'bg-gray-100 text-gray-600',
+    'TAMBAH_SURAT': 'bg-blue-100 text-blue-700',
+    'EDIT_SURAT': 'bg-yellow-100 text-yellow-700',
+    'HAPUS_SURAT': 'bg-red-100 text-red-700',
+    'GANTI_PASSWORD': 'bg-purple-100 text-purple-700',
+    'TAMBAH_USER': 'bg-teal-100 text-teal-700',
+    'HAPUS_USER': 'bg-red-100 text-red-700'
+  };
+
+  const renderLog = (data) => {
+    const tbody = document.getElementById('tbody-log');
+    if (!data.length) {
+      tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📝</div><h3>Belum ada log</h3></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = data.map(l => {
+      const icon = aksiIcon[l.aksi] || '📌';
+      const colorClass = aksiColor[l.aksi] || 'bg-gray-100 text-gray-600';
+      const waktu = new Date(l.created_at);
+      const waktuStr = waktu.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })
+        + ' ' + waktu.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+      return `<tr>
+        <td style="font-size:12px;color:#64748b;white-space:nowrap">${waktuStr}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;flex-shrink:0">
+              ${(l.user_nama || '?').charAt(0).toUpperCase()}
+            </div>
+            <span style="font-size:13px;font-weight:500">${l.user_nama || 'System'}</span>
+          </div>
+        </td>
+        <td>
+          <span class="px-2 py-1 rounded-lg text-xs font-semibold ${colorClass}" style="white-space:nowrap">
+            ${icon} ${l.aksi?.replace(/_/g, ' ')}
+          </span>
+        </td>
+        <td style="font-size:13px;color:#475569">${l.deskripsi || '-'}</td>
+      </tr>`;
+    }).join('');
+  };
+
+  const filterLog = (val) => {
+    const q = val.toLowerCase();
+    const filtered = allLog.filter(l =>
+      (l.user_nama || '').toLowerCase().includes(q) ||
+      (l.aksi || '').toLowerCase().includes(q) ||
+      (l.deskripsi || '').toLowerCase().includes(q)
+    );
+    renderLog(filtered);
+  };
+
+  const loadLog = async () => {
+    const res = await apiFetch('/laporan/activity-log');
+    if (!res?.ok) return;
+    allLog = res.data.data || [];
+    renderLog(allLog);
+  };
+
+  loadLog();
+</script>
+</body>
+</html>
