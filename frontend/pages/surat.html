@@ -147,12 +147,13 @@
             <th>Kategori</th>
             <th>Tanggal</th>
             <th>Pengirim / Tujuan</th>
+            <th>Keterangan</th>
             <th>File</th>
             <th style="width:120px">Aksi</th>
           </tr>
         </thead>
         <tbody id="tbody-surat">
-          <tr><td colspan="9" style="text-align:center;padding:48px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>
+          <tr><td colspan="10" style="text-align:center;padding:48px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -336,11 +337,11 @@
     if (search) params.append('search', search);
 
     const tbody = document.getElementById('tbody-surat');
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:36px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:36px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>`;
 
     const res = await apiFetch(`/surat?${params}`);
     if (!res?.ok) {
-      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">❌</div><h3>Gagal memuat data</h3></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">❌</div><h3>Gagal memuat data</h3></div></td></tr>`;
       return;
     }
 
@@ -352,7 +353,7 @@
       `Menampilkan ${((page-1)*15)+1}–${Math.min(page*15, pagination.total)} dari ${pagination.total}`;
 
     if (!data.length) {
-      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">
+      tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state">
         <div class="empty-icon">📭</div>
         <h3>Surat tidak ditemukan</h3>
         <p>Coba ubah filter atau kata kunci pencarian</p>
@@ -369,6 +370,11 @@
           <td>${badgeKategori(s.kategori)}</td>
           <td style="font-size:12.5px;color:#64748b;white-space:nowrap">${formatDateShort(s.tanggal_surat)}</td>
           <td style="font-size:12.5px;color:#475569;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.jenis === 'masuk' ? (s.pengirim||'-') : (s.penerima||'-')}</td>
+          <td style="font-size:12px;color:#64748b;max-width:150px">
+            ${s.keterangan
+              ? `<span title="${s.keterangan}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${s.keterangan}</span>`
+              : '<span style="color:#cbd5e1">—</span>'}
+          </td>
           <td>
             ${s.file_path ? `<button onclick="previewPdf('${s.id}')" class="btn btn-secondary btn-sm btn-icon" title="Preview PDF">📄</button>` : '<span style="color:#cbd5e1;font-size:12px">—</span>'}
           </td>
@@ -465,6 +471,7 @@
   };
 
   const resetForm = () => {
+    // Isi semua field termasuk keterangan
     ['f-nomor','f-perihal','f-pengirim','f-penerima','f-keterangan','f-file-path'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
@@ -534,6 +541,8 @@
           <p style="font-size:10px;color:#cbd5e1;margin-top:2px">Klik area ini untuk ganti file</p>
         `;
         showToast('File PDF berhasil diupload!', 'success');
+        // Auto-refresh tabel agar file_path langsung terlihat
+        if (editingId) loadSurat(currentPage);
       } else {
         state.innerHTML = `
           <div class="upload-icon">📄</div>
