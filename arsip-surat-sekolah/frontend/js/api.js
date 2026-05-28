@@ -82,14 +82,6 @@ const apiUpload = async (endpoint, formData) => {
 // ============================================
 // TOAST NOTIFICATION
 // ============================================
-const createToastContainer = () => {
-  const c = document.createElement('div');
-  c.id = 'toast-container';
-  c.className = 'fixed top-4 right-4 z-[9999] flex flex-col gap-2';
-  document.body.appendChild(c);
-  return c;
-};
-
 const showToast = (message, type = 'success') => {
   const container = document.getElementById('toast-container') || createToastContainer();
   const toast = document.createElement('div');
@@ -114,6 +106,14 @@ const showToast = (message, type = 'success') => {
     toast.classList.add('translate-x-full');
     setTimeout(() => toast.remove(), 300);
   }, 3500);
+};
+
+const createToastContainer = () => {
+  const c = document.createElement('div');
+  c.id = 'toast-container';
+  c.className = 'fixed top-4 right-4 z-[9999] flex flex-col gap-2';
+  document.body.appendChild(c);
+  return c;
 };
 
 // ============================================
@@ -201,22 +201,9 @@ window.logout = logout;
 
 // Tangkap klik tombol Keluar di mana saja agar pasti bekerja
 document.addEventListener('click', (e) => {
-  const btn = e.target.closest('button, a');
-  if (!btn) return;
-  const onclickAttr = btn.getAttribute('onclick') || '';
-  // Hanya tangkap jika onclick="logout()" ATAU teks persis "Keluar" / "Logout"
-  // Jangan tangkap badge "📤 Keluar" atau nav item lain
-  const txtTrim = btn.textContent.replace(/\s+/g, ' ').trim();
-  const isLogoutBtn =
-    onclickAttr === 'logout()' ||
-    txtTrim === 'Keluar' ||
-    txtTrim === '🚪 Keluar' ||
-    txtTrim === 'Logout' ||
-    btn.id === 'btn-logout' ||
-    btn.classList.contains('btn-logout');
-  if (isLogoutBtn) {
+  const btn = e.target.closest('button');
+  if (btn && (btn.getAttribute('onclick') === 'logout()' || btn.textContent.includes('Keluar'))) {
     e.preventDefault();
-    e.stopPropagation();
     logout();
   }
 });

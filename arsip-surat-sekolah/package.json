@@ -4,8 +4,7 @@
   "scripts": {
     "start": "cd backend && node server.js",
     "dev": "cd backend && npm run dev",
-    "install-deps": "cd backend && npm install",
-    "build": "node setup.js"
+    "install-deps": "cd backend && npm install"
   },
   "engines": {
     "node": ">=18.0.0"

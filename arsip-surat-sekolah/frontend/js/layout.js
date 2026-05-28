@@ -102,8 +102,6 @@ const renderLayout = (activePage = 'dashboard') => {
         contentDiv.insertBefore(child, contentDiv.firstChild);
       }
     }
-    main.appendChild(contentDiv);
-    document.body.appendChild(main);
   }
 
   setUserInfo();

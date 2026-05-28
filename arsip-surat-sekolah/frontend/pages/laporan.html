@@ -312,9 +312,11 @@
   const exportCSV = (jenis) => {
     const tahun = document.getElementById('filter-tahun').value;
     const token = getToken();
-    let url = `${API_URL}/laporan/export-csv?tahun=${tahun}`;
+    let url = `/api/laporan/export-csv?tahun=${tahun}`;
     if (jenis !== 'semua') url += `&jenis=${jenis}`;
 
+    // Buat link download dengan token di header tidak bisa langsung
+    // Pakai pendekatan fetch + blob
     showToast('Menyiapkan file CSV...', 'info');
     fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
       .then(r => r.blob())

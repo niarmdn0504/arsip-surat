@@ -3,6 +3,7 @@ const router = express.Router();
 const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
 const multer = require('multer');
+const path = require('path');
 
 router.use(authMiddleware);
 
@@ -20,21 +21,8 @@ const upload = multer({
   }
 });
 
-// Middleware wrapper untuk tangkap error multer (fileFilter dll)
-const uploadMiddleware = (fieldName) => (req, res, next) => {
-  upload.single(fieldName)(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      return res.status(400).json({ error: err.message });
-    }
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }
-    next();
-  });
-};
-
 // POST /api/upload/pdf - upload PDF ke Supabase Storage
-router.post('/pdf', uploadMiddleware('file'), async (req, res) => {
+router.post('/pdf', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'File PDF wajib dipilih.' });
@@ -67,6 +55,9 @@ router.post('/pdf', uploadMiddleware('file'), async (req, res) => {
     });
   } catch (err) {
     console.error('Upload error:', err);
+    if (err.message === 'Hanya file PDF yang diizinkan!') {
+      return res.status(400).json({ error: err.message });
+    }
     res.status(500).json({ error: 'Gagal mengupload file.' });
   }
 });

@@ -13,31 +13,14 @@ const fs = require('fs');
 const path = require('path');
 
 // ==========================================
-// Baca dari environment variable atau .env file
+// WAJIB DIISI - ambil dari Supabase > Settings > API
 // ==========================================
-let SUPABASE_URL = process.env.SUPABASE_URL;
-let SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const SUPABASE_URL     = 'https://cjgqmdymyybuldbypryf.supabase.co';   // <-- ganti ini
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqZ3FtZHlteXlidWxkYnlwcnlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTE2NTAsImV4cCI6MjA5NTM2NzY1MH0.YKMIf1LcCJxGQzEc3RexMqybtB-Ma-8XCpbv9NP3-VY';         // <-- ganti ini
+// ==========================================
 
-// Fallback: baca dari .env file jika ada
-try {
-  const envPath = path.join(__dirname, '.env');
-  if (fs.existsSync(envPath)) {
-    const envContent = fs.readFileSync(envPath, 'utf8');
-    const lines = envContent.split('\n');
-    lines.forEach(line => {
-      const [key, ...vals] = line.split('=');
-      const val = vals.join('=').trim().replace(/^['"]|['"]$/g, '');
-      if (key.trim() === 'SUPABASE_URL' && val) SUPABASE_URL = val;
-      if (key.trim() === 'SUPABASE_ANON_KEY' && val) SUPABASE_ANON_KEY = val;
-    });
-  }
-} catch(e) {}
-
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL.includes('YOUR_SUPABASE')) {
-  console.error('\n❌ ERROR: Isi SUPABASE_URL dan SUPABASE_ANON_KEY di .env file atau environment variable!\n');
-  console.error('   Buat file .env di root project dengan isi:\n');
-  console.error('   SUPABASE_URL=https://xxxxx.supabase.co');
-  console.error('   SUPABASE_ANON_KEY=eyJhbGciOi...\n');
+if (SUPABASE_URL.includes('xxxxxxxxxx') || SUPABASE_ANON_KEY.includes('eyJhbGciOiJIUzI1NiIs...')) {
+  console.error('\n❌ ERROR: Isi dulu SUPABASE_URL dan SUPABASE_ANON_KEY di file setup.js!\n');
   process.exit(1);
 }
 

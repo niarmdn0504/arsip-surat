@@ -1,12 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const baseDir = __dirname;
+const baseDir = 'C:\\Project\\arsip-surat-sekolah';
 const pagesDir = path.join(baseDir, 'frontend', 'pages');
 const jsDir = path.join(baseDir, 'frontend', 'js');
-
-// Konfigurasi: isi SUPABASE_URL jika ingin inject langsung
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
 
 const sidebarHtml = `<aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
@@ -112,9 +109,7 @@ let sdContent = fs.readFileSync(suratDetailPath, 'utf8');
 if (sdContent.includes("document.getElementById('pdf-preview').src = surat.file_path;")) {
   sdContent = sdContent.replace(
     "document.getElementById('pdf-preview').src = surat.file_path;",
-    `    const sbUrl = window.SUPABASE_URL || document.querySelector('meta[name="sb-url"]')?.content || '${SUPABASE_URL}';
-      const pdfUrl = \`\${sbUrl}/storage/v1/object/public/surat-files/\${surat.file_path}\`;
-      document.getElementById('pdf-preview').src = pdfUrl;`
+    "const pdfUrl = `${window.SUPABASE_URL || 'https://cjgqmdymyybuldbypryf.supabase.co'}/storage/v1/object/public/surat-files/${surat.file_path}`;\n      document.getElementById('pdf-preview').src = pdfUrl;"
   );
   sdContent = sdContent.replace(
     "document.getElementById('btn-download').href = surat.file_path;",
