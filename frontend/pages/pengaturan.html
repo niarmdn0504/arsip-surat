@@ -475,11 +475,14 @@
       });
 
       if (res?.ok) {
-        // Simpan juga ke localStorage sebagai cache
+        // Simpan ke localStorage sebagai cache
         localStorage.setItem('sekolah_config', JSON.stringify(config));
+        // Update _savedBranding langsung agar berlaku tanpa refresh
+        window._savedBranding = config;
+        window._fetchingBranding = false;
         btnText.innerHTML = '✅ Tersimpan!';
-        showToast('Pengaturan berhasil disimpan!', 'success');
-        // Apply langsung tanpa refresh
+        showToast('Pengaturan berhasil disimpan! Berlaku di semua halaman.', 'success');
+        // Terapkan branding langsung ke halaman ini
         if (typeof terapkanBranding === 'function') terapkanBranding();
         setTimeout(() => {
           btn.disabled = false;
