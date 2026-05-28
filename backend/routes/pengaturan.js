@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
-const { authMiddleware, adminMiddleware } = require('../middleware/auth');
+const { authMiddleware, adminOnly } = require('../middleware/auth');
 
 // GET /api/pengaturan — ambil pengaturan sekolah (semua user bisa akses)
 router.get('/', authMiddleware, async (req, res) => {
@@ -22,7 +22,7 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // POST /api/pengaturan — simpan pengaturan (admin only)
-router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
+router.post('/', authMiddleware, adminOnly, async (req, res) => {
   try {
     const { nama, nama_singkat, tagline, alamat, logo, warna, _preset } = req.body;
 
@@ -68,7 +68,7 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // DELETE /api/pengaturan/reset — reset ke default (admin only)
-router.delete('/reset', authMiddleware, adminMiddleware, async (req, res) => {
+router.delete('/reset', authMiddleware, adminOnly, async (req, res) => {
   try {
     await supabase
       .from('pengaturan_sekolah')
