@@ -8,9 +8,6 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const pengaturanRoutes = require('./routes/pengaturan');
-app.use('/api/pengaturan', pengaturanRoutes);
-
 // === SECURITY HEADERS (helmet) ===
 app.use(helmet({
   contentSecurityPolicy: false, // disable agar PDF preview bisa jalan
@@ -64,6 +61,7 @@ app.use('/api/upload', apiLimiter, require('./routes/upload'));
 app.use('/api/users', apiLimiter, require('./routes/users'));
 app.use('/api/notifikasi', apiLimiter, require('./routes/notifikasi'));
 app.use('/api/laporan', apiLimiter, require('./routes/laporan'));
+app.use('/api/pengaturan', apiLimiter, require('./routes/pengaturan'));
 
 // Health check
 app.get('/api/health', (req, res) => {
