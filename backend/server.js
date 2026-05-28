@@ -8,6 +8,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const pengaturanRoutes = require('./routes/pengaturan');
+app.use('/api/pengaturan', pengaturanRoutes);
+
 // === SECURITY HEADERS (helmet) ===
 app.use(helmet({
   contentSecurityPolicy: false, // disable agar PDF preview bisa jalan
