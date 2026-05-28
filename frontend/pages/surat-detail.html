@@ -270,9 +270,9 @@
   const showPreview = async (filePath) => {
     if (!filePath) { showToast('File PDF tidak tersedia', 'warning'); return; }
     showToast('Memuat PDF...', 'info');
-    // Generate signed URL langsung dari browser
-    const url = await getSignedUrl(filePath);
-    if (!url) { showToast('Tidak bisa memuat PDF', 'error'); return; }
+    const res = await apiFetch(`/upload/preview/${filePath}`);
+    if (!res?.ok || !res.data?.success) { showToast('Tidak bisa memuat PDF', 'error'); return; }
+    const url = res.data.url;
     document.getElementById('pdf-inline').src = url;
     document.getElementById('pdf-preview-card').style.display = 'block';
     document.getElementById('pdf-preview-card').scrollIntoView({ behavior: 'smooth' });
@@ -305,12 +305,12 @@
     document.getElementById('error-state').style.display = 'block';
   };
 
-  // Download PDF dengan generate signed URL dulu
   const downloadPdf = async (filePath, namaFile) => {
     if (!filePath) return;
     showToast('Menyiapkan download...', 'info');
-    const url = await getSignedUrl(filePath);
-    if (!url) { showToast('Gagal download PDF', 'error'); return; }
+    const res = await apiFetch(`/upload/preview/${filePath}`);
+    if (!res?.ok || !res.data?.success) { showToast('Gagal download PDF', 'error'); return; }
+    const url = res.data.url;
     const a = document.createElement('a');
     a.href = url;
     a.download = namaFile + '.pdf';

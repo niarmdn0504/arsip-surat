@@ -39,7 +39,13 @@ const apiFetch = async (endpoint, options = {}) => {
   };
 
   try {
-    const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+    const method = options.method || 'GET';
+    let url = `${API_URL}${endpoint}`;
+    if (method === 'GET') {
+      url += (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+    }
+
+    const res = await fetch(url, { ...options, headers });
     const data = await res.json();
 
     if (res.status === 401 || res.status === 403) {
@@ -189,3 +195,4 @@ const logout = async () => {
   localStorage.clear();
   window.location.href = '/pages/login.html';
 };
+window.logout = logout;
