@@ -67,11 +67,23 @@
       </div>
     </div>
   </div>
-  <div class="user-chip">
-    <div class="user-avatar" id="user-avatar">A</div>
-    <div class="hidden sm:block">
-      <div style="font-size:13px;font-weight:600;color:#0f172a" id="user-name">Loading...</div>
-      <div style="font-size:11px;color:#64748b" id="user-role">-</div>
+  <div style="position:relative">
+    <div class="user-chip" onclick="toggleUserMenu()" style="cursor:pointer" id="user-chip-btn">
+      <div class="user-avatar" id="user-avatar">A</div>
+      <div class="hidden sm:block">
+        <div style="font-size:13px;font-weight:600;color:#0f172a" id="user-name">Loading...</div>
+        <div style="font-size:11px;color:#64748b" id="user-role">-</div>
+      </div>
+      <span style="font-size:10px;color:#94a3b8;margin-left:2px">▾</span>
+    </div>
+    <div id="user-dropdown" style="display:none;position:absolute;top:52px;right:0;width:200px;background:white;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,0.15);border:1px solid #e2e8f0;z-index:200;overflow:hidden">
+      <a href="/pages/profil.html" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;font-weight:500;color:#0f172a;text-decoration:none" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+        <span style="font-size:16px">👤</span> Profil Saya
+      </a>
+      <div style="height:1px;background:#f1f5f9;margin:0 12px"></div>
+      <button onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;font-weight:500;color:#ef4444;background:none;border:none;cursor:pointer;width:100%;text-align:left" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
+        <span style="font-size:16px">🚪</span> Keluar
+      </button>
     </div>
   </div>
 </header>
@@ -685,6 +697,22 @@
   loadNotifikasi();
   // Refresh notifikasi setiap 2 menit
   setInterval(loadNotifikasi, 120000);
+
+
+  // Toggle user dropdown
+  let userMenuOpen = false;
+  const toggleUserMenu = () => {
+    userMenuOpen = !userMenuOpen;
+    document.getElementById('user-dropdown').style.display = userMenuOpen ? 'block' : 'none';
+  };
+  document.addEventListener('click', (e) => {
+    const chip = document.getElementById('user-chip-btn');
+    const dd = document.getElementById('user-dropdown');
+    if (userMenuOpen && chip && dd && !chip.contains(e.target) && !dd.contains(e.target)) {
+      dd.style.display = 'none';
+      userMenuOpen = false;
+    }
+  });
 
 </script>
 </body>
