@@ -190,7 +190,10 @@ const setUserInfo = () => {
 };
 
 // Logout
+let _loggingOut = false;
 const logout = async () => {
+  if (_loggingOut) return;
+  _loggingOut = true;
   try {
     await apiFetch('/auth/logout', { method: 'POST' });
   } catch (err) {}

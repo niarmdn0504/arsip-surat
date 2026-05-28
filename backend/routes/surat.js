@@ -174,7 +174,16 @@ router.post('/', async (req, res) => {
       deskripsi: `Tambah surat: ${data.nomor_surat} - ${data.perihal}`
     }).catch(() => {});
 
-    // Kirim notifikasi ke semua user jika surat masuk (sudah otomatis via trigger DB)
+    // Kirim notifikasi ke semua user kecuali pembuat
+    if (jenis === 'keluar') {
+      const { data: userList } = await supabase.from('users').select('id');
+      const notifs = (userList || []).filter(u => u.id !== req.user.id).map(u => ({
+        user_id: u.id, surat_id: data.id, tipe: 'surat_keluar',
+        judul: 'Surat Keluar Baru',
+        pesan: `Surat "${data.perihal}" ke ${data.penerima}`
+      }));
+      if (notifs.length) supabase.from('notifikasi').insert(notifs).catch(() => {});
+    }
     res.status(201).json({ success: true, data, message: 'Surat berhasil ditambahkan.' });
   } catch (err) {
     console.error('Create surat error:', err);

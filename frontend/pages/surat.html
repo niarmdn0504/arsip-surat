@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" id="favicon" href="data:">
   <title>Arsip Surat — Sekolah</title>
   <!-- Supabase config untuk upload langsung dari browser -->
   <!-- GANTI dengan nilai dari Supabase dashboard > Settings > API -->
@@ -597,6 +598,7 @@
       showToast(res.data.message || 'Surat berhasil disimpan', 'success');
       closeModal();
       loadSurat(currentPage);
+      loadNotifikasi();
     } else {
       showToast(res?.data?.error || 'Gagal menyimpan surat', 'error');
     }
@@ -615,18 +617,16 @@
     }
   };
 
-  // ============ PREVIEW PDF (Signed URL langsung dari Supabase) ============
+  // ============ PREVIEW PDF (via backend proxy) ============
   const previewPdf = async (id) => {
-    // Ambil file_path dari API
     const res = await apiFetch(`/surat/${id}`);
     if (!res?.ok || !res.data.data?.file_path) {
       showToast('Tidak ada file PDF untuk surat ini', 'warning');
       return;
     }
-    // Generate signed URL langsung dari browser
-    const url = await getSignedUrl(res.data.data.file_path);
-    if (url) {
-      document.getElementById('pdf-viewer').src = url;
+    const previewRes = await apiFetch(`/upload/preview/${res.data.data.file_path}`);
+    if (previewRes?.ok && previewRes.data?.url) {
+      document.getElementById('pdf-viewer').src = previewRes.data.url;
       document.getElementById('modal-pdf').classList.add('open');
     } else {
       showToast('Tidak bisa memuat file PDF', 'error');

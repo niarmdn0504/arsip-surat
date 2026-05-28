@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" id="favicon" href="data:">
   <title>Pengaturan Sekolah — Arsip Surat</title>
   <meta name="sb-url" content="SUPABASE_URL_KAMU">
   <meta name="sb-key" content="SUPABASE_ANON_KEY_KAMU">
@@ -316,6 +317,10 @@
           updatePreviewWarna(config.warna.utama, config.warna.utama_muda, config.warna.aksen);
           highlightPreset(selectedPreset);
         }
+
+        // Update branding dengan data dari API agar warna langsung sesuai
+        window._savedBranding = config;
+        if (typeof terapkanBranding === 'function') terapkanBranding();
       } else {
         document.getElementById('f-nama').value = 'SMA Negeri 1 Contoh';
         document.getElementById('f-nama-singkat').value = 'SMAN 1 Contoh';

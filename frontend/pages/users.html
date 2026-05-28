@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" id="favicon" href="data:">
   <title>Data Pengguna — Arsip Surat Sekolah</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -185,6 +186,14 @@
   const user = getUser();
   if (user?.role !== 'admin') { window.location.href = 'dashboard.html'; }
   setUserInfo();
+
+  // Tampilkan menu admin
+  if (user?.role === 'admin') {
+    document.getElementById('admin-section').removeAttribute('style');
+    document.getElementById('nav-users').style.display = 'flex';
+    document.getElementById('nav-log').style.display = 'flex';
+    document.getElementById('nav-pengaturan').style.display = 'flex';
+  }
 
   const toggleSidebar = () => {
     document.getElementById('sidebar').classList.toggle('open');

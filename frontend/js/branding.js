@@ -161,6 +161,9 @@ const terapkanBranding = () => {
   footerEls.forEach(el => {
     el.textContent = `© ${SEKOLAH_CONFIG.tahun_sistem} ${SEKOLAH_CONFIG.nama} · ${SEKOLAH_CONFIG.kredit}`;
   });
+
+  // 7. Update favicon
+  _updateFavicon();
 };
 
 // Update logo di halaman manapun
@@ -199,6 +202,14 @@ const _updateLogo = () => {
   // Nama di navbar header
   const navNama = document.getElementById('nav-nama-sekolah');
   if (navNama) navNama.textContent = SEKOLAH_CONFIG.nama_singkat;
+};
+
+// Update favicon dengan logo sekolah
+const _updateFavicon = () => {
+  const favicon = document.getElementById('favicon');
+  if (favicon && SEKOLAH_CONFIG.logo) {
+    favicon.href = SEKOLAH_CONFIG.logo;
+  }
 };
 
 // Update nama di sidebar
