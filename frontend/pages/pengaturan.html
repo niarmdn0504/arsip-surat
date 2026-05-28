@@ -16,23 +16,26 @@
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div style="display:flex;align-items:center;gap:12px">
-      <div class="logo-icon">🏫</div>
-      <div class="logo-text"><h2>Arsip Surat</h2><p>Manajemen Surat Sekolah</p></div>
+      <div class="logo-icon" id="sidebar-logo-icon">🏫</div>
+      <div class="logo-text">
+        <h2 id="sidebar-nama">Arsip Surat</h2>
+        <p>Manajemen Surat Sekolah</p>
+      </div>
     </div>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-label">Menu Utama</div>
-    <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-    <a href="surat.html?jenis=masuk" class="nav-item"><span class="nav-icon">📥</span> Surat Masuk</a>
-    <a href="surat.html?jenis=keluar" class="nav-item"><span class="nav-icon">📤</span> Surat Keluar</a>
-    <div class="nav-label" style="margin-top:12px">Administrasi</div>
-    <a href="users.html" class="nav-item"><span class="nav-icon">👥</span> Data Pengguna</a>
-    <a href="activity-log.html" class="nav-item"><span class="nav-icon">📝</span> Log Aktivitas</a>
-    <a href="pengaturan.html" class="nav-item active"><span class="nav-icon">⚙️</span> Pengaturan</a>
+    <a href="dashboard.html" class="nav-item" id="nav-dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+    <a href="surat.html?jenis=masuk" class="nav-item" id="nav-surat-masuk"><span class="nav-icon">📥</span> Surat Masuk</a>
+    <a href="surat.html?jenis=keluar" class="nav-item" id="nav-surat-keluar"><span class="nav-icon">📤</span> Surat Keluar</a>
+    <div class="nav-label" style="margin-top:12px;display:none" id="admin-section">Administrasi</div>
+    <a href="users.html" class="nav-item" id="nav-users" style="display:none"><span class="nav-icon">👥</span> Data Pengguna</a>
+    <a href="activity-log.html" class="nav-item" id="nav-log" style="display:none"><span class="nav-icon">📝</span> Log Aktivitas</a>
+    <a href="pengaturan.html" class="nav-item" id="nav-pengaturan" class="nav-item active" style="display:none"><span class="nav-icon">⚙️</span> Pengaturan</a>
   </nav>
   <div class="sidebar-footer">
-    <a href="profil.html" class="nav-item"><span class="nav-icon">👤</span> Profil Saya</a>
-    <button onclick="logout()" class="nav-item" style="width:100%;border:none;background:none;cursor:pointer;color:rgba(255,255,255,0.5)">
+    <a href="profil.html" class="nav-item" id="nav-profil"><span class="nav-icon">👤</span> Profil Saya</a>
+    <button type="button" onclick="logout()" class="nav-item" style="width:100%;border:none;background:none;cursor:pointer;color:rgba(255,255,255,0.7);text-align:left;">
       <span class="nav-icon">🚪</span> Keluar
     </button>
   </div>
@@ -249,6 +252,7 @@
 
 <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
 
+<script src="../js/branding.js"></script>
 <script src="../js/api.js"></script>
 <script>
   if (!requireAuth()) throw new Error();
