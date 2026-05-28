@@ -4,7 +4,7 @@ const supabase = require('../config/supabase');
 const { authMiddleware, adminOnly } = require('../middleware/auth');
 
 // GET /api/pengaturan — ambil pengaturan sekolah (semua user bisa akses)
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('pengaturan_sekolah')

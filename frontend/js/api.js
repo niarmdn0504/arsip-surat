@@ -85,7 +85,8 @@ const apiUpload = async (endpoint, formData) => {
 const createToastContainer = () => {
   const c = document.createElement('div');
   c.id = 'toast-container';
-  c.className = 'fixed top-4 right-4 z-[9999] flex flex-col gap-2';
+  c.className = 'fixed top-4 right-4 flex flex-col gap-2';
+  c.style.zIndex = '99999';
   document.body.appendChild(c);
   return c;
 };
