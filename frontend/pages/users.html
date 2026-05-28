@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Pengguna — Arsip Surat Sekolah</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo-icon" id="sidebar-logo-icon">🏫</div>
+      <div class="logo-text">
+        <h2 id="sidebar-nama">Arsip Surat</h2>
+        <p>Manajemen Surat Sekolah</p>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Menu Utama</div>
+    <a href="dashboard.html" class="nav-item" id="nav-dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+    <a href="surat.html?jenis=masuk" class="nav-item" id="nav-surat-masuk"><span class="nav-icon">📥</span> Surat Masuk</a>
+    <a href="surat.html?jenis=keluar" class="nav-item" id="nav-surat-keluar"><span class="nav-icon">📤</span> Surat Keluar</a>
+    <div class="nav-label" style="margin-top:12px;display:none" id="admin-section">Administrasi</div>
+    <a href="users.html" class="nav-item" id="nav-users" class="nav-item active" style="display:none"><span class="nav-icon">👥</span> Data Pengguna</a>
+    <a href="activity-log.html" class="nav-item" id="nav-log" style="display:none"><span class="nav-icon">📝</span> Log Aktivitas</a>
+    <a href="pengaturan.html" class="nav-item" id="nav-pengaturan" style="display:none"><span class="nav-icon">⚙️</span> Pengaturan</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="profil.html" class="nav-item" id="nav-profil"><span class="nav-icon">👤</span> Profil Saya</a>
+    <button type="button" onclick="logout()" class="nav-item" style="width:100%;border:none;background:none;cursor:pointer;color:rgba(255,255,255,0.7);text-align:left;">
+      <span class="nav-icon">🚪</span> Keluar
+    </button>
+  </div>
+</aside>
+
+<header class="navbar">
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <div style="flex:1">
+    <div class="navbar-title">Data Pengguna</div>
+    <div class="navbar-sub">Kelola akun guru dan admin</div>
+  </div>
+  <button onclick="openModalTambah()" class="btn btn-primary btn-sm">✚ Tambah User</button>
+  <!-- Notifikasi Bell -->
+  <div style="position:relative">
+    <button onclick="toggleNotif()" id="btn-notif" style="width:36px;height:36px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;position:relative">
+      🔔
+      <span id="notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:#ef4444;color:white;font-size:10px;font-weight:700;align-items:center;justify-content:center">0</span>
+    </button>
+    <!-- Dropdown Notifikasi -->
+    <div id="notif-dropdown" style="display:none;position:absolute;top:44px;right:0;width:320px;background:white;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);border:1px solid #e2e8f0;z-index:200;overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:14px;font-weight:700">Notifikasi</span>
+        <button onclick="bacaSemua()" style="font-size:12px;color:#3b82f6;background:none;border:none;cursor:pointer">Tandai Semua Dibaca</button>
+      </div>
+      <div id="notif-list" style="max-height:320px;overflow-y:auto">
+        <div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px">Memuat...</div>
+      </div>
+    </div>
+  </div>
+  <div class="user-chip">
+    <div class="user-avatar" id="user-avatar">A</div>
+    <div class="hidden sm:block">
+      <div style="font-size:13px;font-weight:600" id="user-name">-</div>
+      <div style="font-size:11px;color:#64748b" id="user-role">-</div>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+<div class="page-content animate-in">
+
+  <!-- STATS -->
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#eff6ff">👥</div>
+      <div class="stat-value text-blue-700" id="stat-total-user">—</div>
+      <div class="stat-label">Total Pengguna</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fef3c7">⚙️</div>
+      <div class="stat-value text-yellow-600" id="stat-admin">—</div>
+      <div class="stat-label">Administrator</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f0fdf4">🎓</div>
+      <div class="stat-value text-green-600" id="stat-guru">—</div>
+      <div class="stat-label">Guru</div>
+    </div>
+  </div>
+
+  <!-- TABEL USER -->
+  <div class="card">
+    <div class="card-header" style="padding:16px 20px">
+      <h3 style="font-size:15px;font-weight:700">Daftar Pengguna</h3>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>NIP</th>
+            <th>Jabatan</th>
+            <th>Role</th>
+            <th>Bergabung</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-users">
+          <tr><td colspan="8" style="text-align:center;padding:40px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<!-- MODAL TAMBAH/EDIT USER -->
+<div class="modal-overlay" id="modal-user">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-title">Tambah Pengguna</h2>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="form-group col-span-2">
+          <label class="form-label">Nama Lengkap <span>*</span></label>
+          <input type="text" id="f-nama" class="form-control" placeholder="Nama lengkap pengguna">
+        </div>
+        <div class="form-group" id="group-email">
+          <label class="form-label">Email <span>*</span></label>
+          <input type="email" id="f-email" class="form-control" placeholder="email@sekolah.sch.id">
+        </div>
+        <div class="form-group" id="group-password">
+          <label class="form-label">Password <span id="pw-required">*</span></label>
+          <input type="password" id="f-password" class="form-control" placeholder="Min. 6 karakter">
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px" id="pw-hint"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">NIP</label>
+          <input type="text" id="f-nip" class="form-control" placeholder="NIP (opsional)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jabatan</label>
+          <input type="text" id="f-jabatan" class="form-control" placeholder="Guru Matematika, dll">
+        </div>
+        <div class="form-group col-span-2">
+          <label class="form-label">Role</label>
+          <div style="display:flex;gap:12px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border-radius:10px;border:1.5px solid #e2e8f0;flex:1;font-size:13.5px;font-weight:500" id="role-guru-label">
+              <input type="radio" name="role" value="guru" id="r-guru" checked onchange="updateRoleStyle()"> 🎓 Guru
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border-radius:10px;border:1.5px solid #e2e8f0;flex:1;font-size:13.5px;font-weight:500" id="role-admin-label">
+              <input type="radio" name="role" value="admin" id="r-admin" onchange="updateRoleStyle()"> ⚙️ Admin
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal()" class="btn btn-secondary">Batal</button>
+      <button onclick="submitUser()" id="btn-submit" class="btn btn-primary">
+        <span id="btn-submit-text">💾 Simpan</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+<script src="../js/branding.js"></script>
+<script src="../js/api.js"></script>
+<script>
+  if (!requireAuth()) throw new Error();
+  const user = getUser();
+  if (user?.role !== 'admin') { window.location.href = 'dashboard.html'; }
+  setUserInfo();
+
+  const toggleSidebar = () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  };
+  const closeSidebar = () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  };
+
+  let editingId = null;
+  let usersData = [];
+
+  const loadUsers = async () => {
+    const res = await apiFetch('/users');
+    if (!res?.ok) return;
+    usersData = res.data.data || [];
+
+    // Stats
+    const admins = usersData.filter(u => u.role === 'admin').length;
+    const gurus = usersData.filter(u => u.role === 'guru').length;
+    document.getElementById('stat-total-user').textContent = usersData.length;
+    document.getElementById('stat-admin').textContent = admins;
+    document.getElementById('stat-guru').textContent = gurus;
+
+    const tbody = document.getElementById('tbody-users');
+    if (!usersData.length) {
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">👥</div><h3>Belum ada pengguna</h3></div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = usersData.map((u, i) => `
+      <tr>
+        <td style="color:#94a3b8;font-size:12px">${i+1}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px;flex-shrink:0">${u.nama?.charAt(0).toUpperCase()}</div>
+            <div>
+              <div style="font-weight:600;font-size:13.5px">${u.nama}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-size:13px;color:#475569">${u.email}</td>
+        <td style="font-size:12.5px;color:#64748b">${u.nip || '—'}</td>
+        <td style="font-size:12.5px;color:#475569">${u.jabatan || '—'}</td>
+        <td>
+          ${u.role === 'admin'
+            ? '<span style="padding:3px 10px;border-radius:20px;background:#fefce8;color:#854d0e;font-size:11.5px;font-weight:600">⚙️ Admin</span>'
+            : '<span style="padding:3px 10px;border-radius:20px;background:#f0fdf4;color:#166534;font-size:11.5px;font-weight:600">🎓 Guru</span>'}
+        </td>
+        <td style="font-size:12px;color:#94a3b8;white-space:nowrap">${formatDateShort(u.created_at)}</td>
+        <td>
+          <div style="display:flex;gap:4px">
+            <button onclick="openModalEdit('${u.id}')" class="btn btn-secondary btn-sm btn-icon" title="Edit" ${u.id === user.id ? 'disabled' : ''}>✏️</button>
+            <button onclick="hapusUser('${u.id}','${u.nama}')" class="btn btn-sm btn-icon" style="background:#fef2f2;color:#ef4444" title="Hapus" ${u.id === user.id ? 'disabled style="opacity:0.3"' : ''}>🗑</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  };
+
+  const openModalTambah = () => {
+    editingId = null;
+    document.getElementById('modal-title').textContent = 'Tambah Pengguna Baru';
+    document.getElementById('btn-submit-text').textContent = '💾 Simpan';
+    document.getElementById('group-email').style.display = '';
+    document.getElementById('group-password').style.display = '';
+    document.getElementById('pw-hint').textContent = '';
+    document.getElementById('pw-required').textContent = '*';
+    resetForm();
+    document.getElementById('modal-user').classList.add('open');
+  };
+
+  const openModalEdit = (id) => {
+    editingId = id;
+    const u = usersData.find(x => x.id === id);
+    if (!u) return;
+
+    document.getElementById('modal-title').textContent = 'Edit Pengguna';
+    document.getElementById('btn-submit-text').textContent = '💾 Update';
+    document.getElementById('group-email').style.display = 'none';
+    document.getElementById('pw-hint').textContent = 'Kosongkan jika tidak ingin ubah password';
+    document.getElementById('pw-required').textContent = '';
+
+    document.getElementById('f-nama').value = u.nama;
+    document.getElementById('f-email').value = u.email;
+    document.getElementById('f-nip').value = u.nip || '';
+    document.getElementById('f-jabatan').value = u.jabatan || '';
+    document.getElementById(u.role === 'admin' ? 'r-admin' : 'r-guru').checked = true;
+    updateRoleStyle();
+
+    document.getElementById('modal-user').classList.add('open');
+  };
+
+  const closeModal = () => {
+    document.getElementById('modal-user').classList.remove('open');
+    resetForm();
+    editingId = null;
+  };
+
+  const resetForm = () => {
+    document.getElementById('f-nama').value = '';
+    document.getElementById('f-email').value = '';
+    document.getElementById('f-password').value = '';
+    document.getElementById('f-nip').value = '';
+    document.getElementById('f-jabatan').value = '';
+    document.getElementById('r-guru').checked = true;
+    updateRoleStyle();
+  };
+
+  const updateRoleStyle = () => {
+    const isAdmin = document.getElementById('r-admin').checked;
+    document.getElementById('role-guru-label').style.borderColor = isAdmin ? '#e2e8f0' : '#3b82f6';
+    document.getElementById('role-guru-label').style.background = isAdmin ? '' : '#eff6ff';
+    document.getElementById('role-admin-label').style.borderColor = isAdmin ? '#3b82f6' : '#e2e8f0';
+    document.getElementById('role-admin-label').style.background = isAdmin ? '#eff6ff' : '';
+  };
+
+  const submitUser = async () => {
+    const nama = document.getElementById('f-nama').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const password = document.getElementById('f-password').value;
+    const nip = document.getElementById('f-nip').value.trim();
+    const jabatan = document.getElementById('f-jabatan').value.trim();
+    const role = document.querySelector('input[name="role"]:checked').value;
+
+    if (!nama) { showToast('Nama wajib diisi', 'warning'); return; }
+    if (!editingId && (!email || !password)) { showToast('Email dan password wajib diisi', 'warning'); return; }
+
+    const btn = document.getElementById('btn-submit');
+    const btnText = document.getElementById('btn-submit-text');
+    btn.disabled = true;
+    btnText.innerHTML = '<span class="spinner"></span> Menyimpan...';
+
+    const payload = { nama, role, nip, jabatan };
+    if (!editingId) { payload.email = email; payload.password = password; }
+
+    const url = editingId ? `/users/${editingId}` : '/users';
+    const method = editingId ? 'PUT' : 'POST';
+    const res = await apiFetch(url, { method, body: JSON.stringify(payload) });
+
+    btn.disabled = false;
+    btnText.textContent = editingId ? '💾 Update' : '💾 Simpan';
+
+    if (res?.ok) {
+      showToast(res.data.message || 'Berhasil disimpan', 'success');
+      closeModal();
+      loadUsers();
+    } else {
+      showToast(res?.data?.error || 'Gagal menyimpan', 'error');
+    }
+  };
+
+  const hapusUser = async (id, nama) => {
+    if (id === user.id) { showToast('Tidak bisa hapus akun sendiri', 'warning'); return; }
+    const ok = await confirmDelete(`Hapus pengguna "${nama}"?`);
+    if (!ok) return;
+    const res = await apiFetch(`/users/${id}`, { method: 'DELETE' });
+    if (res?.ok) {
+      showToast('Pengguna berhasil dihapus', 'success');
+      loadUsers();
+    } else {
+      showToast(res?.data?.error || 'Gagal menghapus', 'error');
+    }
+  };
+
+  document.getElementById('modal-user').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  loadUsers();
+
+  // ============ NOTIFIKASI ============
+  let notifOpen = false;
+  const loadNotifikasi = async () => {
+    const res = await apiFetch('/notifikasi');
+    if (!res?.ok) return;
+    const { data, belumDibaca } = res.data;
+    const badge = document.getElementById('notif-badge');
+    if (belumDibaca > 0) {
+      badge.style.display = 'flex';
+      badge.textContent = belumDibaca > 9 ? '9+' : belumDibaca;
+    } else {
+      badge.style.display = 'none';
+    }
+    renderNotif(data);
+  };
+
+  const renderNotif = (data) => {
+    const el = document.getElementById('notif-list');
+    if (!data?.length) {
+      el.innerHTML = '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px">Tidak ada notifikasi</div>';
+      return;
+    }
+    el.innerHTML = data.map(n => `
+      <div onclick="klikNotif('${n.id}','${n.surat_id || ''}')" style="padding:12px 16px;border-bottom:1px solid #f8fafc;cursor:pointer;background:${n.dibaca ? 'white' : '#f0f9ff'};transition:background 0.1s" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='${n.dibaca ? 'white' : '#f0f9ff'}'">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="font-size:20px;flex-shrink:0">${n.tipe === 'surat_masuk' ? '📥' : 'ℹ️'}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:${n.dibaca ? '500' : '700'};color:#0f172a">${n.judul}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.pesan || ''}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px">${formatDateShort(n.created_at)}</div>
+          </div>
+          ${!n.dibaca ? '<div style="width:8px;height:8px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:4px"></div>' : ''}
+        </div>
+      </div>
+    `).join('');
+  };
+
+  const toggleNotif = () => {
+    const dd = document.getElementById('notif-dropdown');
+    notifOpen = !notifOpen;
+    dd.style.display = notifOpen ? 'block' : 'none';
+    if (notifOpen) loadNotifikasi();
+  };
+
+  const klikNotif = async (id, suratId) => {
+    await apiFetch(`/notifikasi/${id}/baca`, { method: 'PUT' });
+    document.getElementById('notif-dropdown').style.display = 'none';
+    notifOpen = false;
+    if (suratId) window.location.href = `surat-detail.html?id=${suratId}`;
+    loadNotifikasi();
+  };
+
+  const bacaSemua = async () => {
+    await apiFetch('/notifikasi/baca-semua', { method: 'PUT' });
+    loadNotifikasi();
+    showToast('Semua notifikasi sudah dibaca', 'success');
+  };
+
+  // Tutup dropdown kalau klik di luar
+  document.addEventListener('click', (e) => {
+    const btn = document.getElementById('btn-notif');
+    const dd = document.getElementById('notif-dropdown');
+    if (notifOpen && btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+      dd.style.display = 'none';
+      notifOpen = false;
+    }
+  });
+
+  // Load notifikasi saat halaman dibuka
+  loadNotifikasi();
+  // Refresh notifikasi setiap 2 menit
+  setInterval(loadNotifikasi, 120000);
+
+</script>
+</body>
+</html>

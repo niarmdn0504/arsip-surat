@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Arsip Surat Sekolah</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo-icon" id="sidebar-logo-icon">🏫</div>
+      <div class="logo-text">
+        <h2 id="sidebar-nama">Arsip Surat</h2>
+        <p>Manajemen Surat Sekolah</p>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Menu Utama</div>
+    <a href="dashboard.html" class="nav-item" id="nav-dashboard" class="nav-item active"><span class="nav-icon">📊</span> Dashboard</a>
+    <a href="surat.html?jenis=masuk" class="nav-item" id="nav-surat-masuk"><span class="nav-icon">📥</span> Surat Masuk</a>
+    <a href="surat.html?jenis=keluar" class="nav-item" id="nav-surat-keluar"><span class="nav-icon">📤</span> Surat Keluar</a>
+    <div class="nav-label" style="margin-top:12px;display:none" id="admin-section">Administrasi</div>
+    <a href="users.html" class="nav-item" id="nav-users" style="display:none"><span class="nav-icon">👥</span> Data Pengguna</a>
+    <a href="activity-log.html" class="nav-item" id="nav-log" style="display:none"><span class="nav-icon">📝</span> Log Aktivitas</a>
+    <a href="pengaturan.html" class="nav-item" id="nav-pengaturan" style="display:none"><span class="nav-icon">⚙️</span> Pengaturan</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="profil.html" class="nav-item" id="nav-profil"><span class="nav-icon">👤</span> Profil Saya</a>
+    <button type="button" onclick="logout()" class="nav-item" style="width:100%;border:none;background:none;cursor:pointer;color:rgba(255,255,255,0.7);text-align:left;">
+      <span class="nav-icon">🚪</span> Keluar
+    </button>
+  </div>
+</aside>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <div style="flex:1">
+    <div class="navbar-title">Dashboard</div>
+    <div class="navbar-sub" id="nav-nama-sekolah">Ringkasan Arsip Surat Sekolah</div>
+  </div>
+  <a href="surat.html" class="btn btn-primary btn-sm" style="display:flex;align-items:center;gap:6px">
+    <span>✚</span> <span class="hidden sm:inline">Surat Baru</span>
+  </a>
+  <!-- Notifikasi Bell -->
+  <div style="position:relative">
+    <button onclick="toggleNotif()" id="btn-notif" style="width:36px;height:36px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;position:relative">
+      🔔
+      <span id="notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:#ef4444;color:white;font-size:10px;font-weight:700;align-items:center;justify-content:center">0</span>
+    </button>
+    <!-- Dropdown Notifikasi -->
+    <div id="notif-dropdown" style="display:none;position:absolute;top:44px;right:0;width:320px;background:white;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);border:1px solid #e2e8f0;z-index:200;overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:14px;font-weight:700">Notifikasi</span>
+        <button onclick="bacaSemua()" style="font-size:12px;color:#3b82f6;background:none;border:none;cursor:pointer">Tandai Semua Dibaca</button>
+      </div>
+      <div id="notif-list" style="max-height:320px;overflow-y:auto">
+        <div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px">Memuat...</div>
+      </div>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="user-chip" onclick="toggleUserMenu()" style="cursor:pointer" id="user-chip-btn">
+      <div class="user-avatar" id="user-avatar">A</div>
+      <div class="hidden sm:block">
+        <div style="font-size:13px;font-weight:600;color:#0f172a" id="user-name">Loading...</div>
+        <div style="font-size:11px;color:#64748b" id="user-role">-</div>
+      </div>
+      <span style="font-size:10px;color:#94a3b8;margin-left:2px">▾</span>
+    </div>
+    <!-- Dropdown User -->
+    <div id="user-dropdown" style="display:none;position:absolute;top:52px;right:0;width:200px;background:white;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,0.15);border:1px solid #e2e8f0;z-index:200;overflow:hidden">
+      <a href="/pages/profil.html" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;font-weight:500;color:#0f172a;text-decoration:none;transition:background 0.1s" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+        <span style="font-size:16px">👤</span> Profil Saya
+      </a>
+      <div style="height:1px;background:#f1f5f9;margin:0 12px"></div>
+      <button onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;font-weight:500;color:#ef4444;background:none;border:none;cursor:pointer;width:100%;text-align:left;transition:background 0.1s" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
+        <span style="font-size:16px">🚪</span> Keluar
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+<div class="page-content animate-in">
+
+  <!-- STAT CARDS -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#eff6ff">📋</div>
+      <div class="stat-value text-blue-700" id="stat-total">—</div>
+      <div class="stat-label">Total Surat</div>
+      <div class="absolute top-0 right-0 w-20 h-20 rounded-full bg-blue-50 -translate-y-6 translate-x-6 opacity-60"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f0fdf4">📥</div>
+      <div class="stat-value text-green-600" id="stat-masuk">—</div>
+      <div class="stat-label">Surat Masuk</div>
+      <div class="absolute top-0 right-0 w-20 h-20 rounded-full bg-green-50 -translate-y-6 translate-x-6 opacity-60"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#eff6ff">📤</div>
+      <div class="stat-value text-blue-600" id="stat-keluar">—</div>
+      <div class="stat-label">Surat Keluar</div>
+      <div class="absolute top-0 right-0 w-20 h-20 rounded-full bg-blue-50 -translate-y-6 translate-x-6 opacity-60"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fefce8">📅</div>
+      <div class="stat-value text-yellow-600" id="stat-bulan">—</div>
+      <div class="stat-label">Bulan Ini</div>
+      <div class="absolute top-0 right-0 w-20 h-20 rounded-full bg-yellow-50 -translate-y-6 translate-x-6 opacity-60"></div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <!-- CHART -->
+    <div class="card lg:col-span-2" style="padding:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <h3 style="font-size:15px;font-weight:700">Statistik Surat</h3>
+          <p style="font-size:12px;color:#64748b" id="chart-year">Tahun 2024</p>
+        </div>
+        <div style="display:flex;gap:12px;font-size:12px">
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#10b981;display:inline-block"></span>Masuk</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#3b82f6;display:inline-block"></span>Keluar</span>
+        </div>
+      </div>
+      <div style="height:220px;position:relative">
+        <canvas id="chartSurat"></canvas>
+      </div>
+    </div>
+
+    <!-- RINGKASAN CEPAT -->
+    <div class="card" style="padding:20px">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">Kategori Terbanyak</h3>
+      <div id="kategori-list">
+        <div class="skeleton" style="height:14px;margin-bottom:10px;width:100%"></div>
+        <div class="skeleton" style="height:14px;margin-bottom:10px;width:80%"></div>
+        <div class="skeleton" style="height:14px;margin-bottom:10px;width:90%"></div>
+        <div class="skeleton" style="height:14px;margin-bottom:10px;width:70%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SURAT TERBARU -->
+  <div class="card">
+    <div class="card-header" style="padding:18px 20px 14px">
+      <h3 style="font-size:15px;font-weight:700">Surat Terbaru</h3>
+      <a href="surat.html" class="btn btn-secondary btn-sm">Lihat Semua →</a>
+    </div>
+    <div class="table-wrapper">
+      <table id="table-terbaru">
+        <thead>
+          <tr>
+            <th>No. Surat</th>
+            <th>Perihal</th>
+            <th>Jenis</th>
+            <th>Tanggal</th>
+            <th>Pengirim/Tujuan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-terbaru">
+          <tr><td colspan="6" class="text-center py-8"><div class="spinner spinner-dark mx-auto"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<script src="../js/branding.js"></script>
+<script src="../js/api.js"></script>
+<script>
+  // Auth guard
+  if (!requireAuth()) throw new Error('Not auth');
+
+  // Show admin menu
+  const user = getUser();
+  setUserInfo();
+  if (user?.role === 'admin') {
+    document.getElementById('admin-section').removeAttribute('style');
+    document.getElementById('nav-users').style.display = 'flex';
+    document.getElementById('nav-log').style.display = 'flex';
+    document.getElementById('nav-pengaturan').style.display = 'flex';
+  }
+
+  // Toggle sidebar mobile
+  const toggleSidebar = () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  };
+  const closeSidebar = () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  };
+
+  // Chart instance
+  let chartInstance = null;
+
+  // Load dashboard data
+  const loadDashboard = async () => {
+    const res = await apiFetch('/surat/dashboard');
+    if (!res?.ok) return;
+
+    const d = res.data.data;
+    const tahunIni = new Date().getFullYear();
+
+    // Stat cards
+    document.getElementById('stat-total').textContent = d.totalSurat;
+    document.getElementById('stat-masuk').textContent = d.totalMasuk;
+    document.getElementById('stat-keluar').textContent = d.totalKeluar;
+    document.getElementById('chart-year').textContent = `Tahun ${tahunIni}`;
+
+    // Hitung surat bulan ini
+    const bulanIni = new Date().getMonth();
+    const bulanData = d.statistikBulanan?.[bulanIni];
+    document.getElementById('stat-bulan').textContent = (bulanData?.masuk || 0) + (bulanData?.keluar || 0);
+
+    // Chart
+    renderChart(d.statistikBulanan || []);
+
+    // Surat terbaru
+    renderTerbaru(d.suratTerbaru || []);
+
+    // Kategori
+    renderKategori(d.suratTerbaru || []);
+  };
+
+  const renderChart = (stats) => {
+    const bulanLabels = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const ctx = document.getElementById('chartSurat').getContext('2d');
+
+    if (chartInstance) chartInstance.destroy();
+
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: bulanLabels,
+        datasets: [
+          {
+            label: 'Masuk',
+            data: stats.map(s => s.masuk),
+            backgroundColor: 'rgba(16,185,129,0.85)',
+            borderRadius: 6,
+            borderSkipped: false,
+          },
+          {
+            label: 'Keluar',
+            data: stats.map(s => s.keluar),
+            backgroundColor: 'rgba(59,130,246,0.85)',
+            borderRadius: 6,
+            borderSkipped: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { mode: 'index' } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { stepSize: 1, font: { size: 11 } }
+          }
+        }
+      }
+    });
+  };
+
+  const renderTerbaru = (suratList) => {
+    const tbody = document.getElementById('tbody-terbaru');
+    if (!suratList.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state" style="padding:32px">
+        <div class="empty-icon">📭</div>
+        <h3>Belum ada surat</h3>
+        <p>Tambahkan surat pertama untuk memulai</p>
+      </div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = suratList.map(s => `
+      <tr>
+        <td><span style="font-size:12.5px;font-weight:600;color:#1e40af">${s.nomor_surat}</span></td>
+        <td>
+          <div style="font-weight:500;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.perihal}</div>
+          ${s.kategori ? `<div style="margin-top:2px">${badgeKategori(s.kategori)}</div>` : ''}
+        </td>
+        <td>${badgeJenis(s.jenis)}</td>
+        <td style="font-size:12.5px;color:#64748b;white-space:nowrap">${formatDateShort(s.tanggal_surat)}</td>
+        <td style="font-size:12.5px;color:#64748b">${s.jenis === 'masuk' ? s.pengirim : s.penerima}</td>
+        <td>
+          <a href="surat-detail.html?id=${s.id}" class="btn btn-secondary btn-sm btn-icon" title="Detail">👁</a>
+        </td>
+      </tr>
+    `).join('');
+  };
+
+  const renderKategori = (suratList) => {
+    const map = {};
+    suratList.forEach(s => {
+      const k = s.kategori || 'umum';
+      map[k] = (map[k] || 0) + 1;
+    });
+    const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
+    const total = suratList.length || 1;
+    const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-pink-500'];
+
+    const el = document.getElementById('kategori-list');
+    if (!sorted.length) {
+      el.innerHTML = '<p style="font-size:13px;color:#94a3b8;text-align:center;padding:20px 0">Belum ada data</p>';
+      return;
+    }
+    el.innerHTML = sorted.map(([k, v], i) => `
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:13px;font-weight:500;text-transform:capitalize">${k}</span>
+          <span style="font-size:12px;color:#64748b;font-weight:600">${v}</span>
+        </div>
+        <div style="height:6px;background:#f1f5f9;border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${(v/total*100).toFixed(0)}%;background:var(--primary-light);border-radius:99px;transition:width 0.5s ease"></div>
+        </div>
+      </div>
+    `).join('');
+  };
+
+  loadDashboard();
+
+  // ============ NOTIFIKASI ============
+  let notifOpen = false;
+  const loadNotifikasi = async () => {
+    const res = await apiFetch('/notifikasi');
+    if (!res?.ok) return;
+    const { data, belumDibaca } = res.data;
+    const badge = document.getElementById('notif-badge');
+    if (belumDibaca > 0) {
+      badge.style.display = 'flex';
+      badge.textContent = belumDibaca > 9 ? '9+' : belumDibaca;
+    } else {
+      badge.style.display = 'none';
+    }
+    renderNotif(data);
+  };
+
+  const renderNotif = (data) => {
+    const el = document.getElementById('notif-list');
+    if (!data?.length) {
+      el.innerHTML = '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px">Tidak ada notifikasi</div>';
+      return;
+    }
+    el.innerHTML = data.map(n => `
+      <div onclick="klikNotif('${n.id}','${n.surat_id || ''}')" style="padding:12px 16px;border-bottom:1px solid #f8fafc;cursor:pointer;background:${n.dibaca ? 'white' : '#f0f9ff'};transition:background 0.1s" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='${n.dibaca ? 'white' : '#f0f9ff'}'">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="font-size:20px;flex-shrink:0">${n.tipe === 'surat_masuk' ? '📥' : 'ℹ️'}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:${n.dibaca ? '500' : '700'};color:#0f172a">${n.judul}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.pesan || ''}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px">${formatDateShort(n.created_at)}</div>
+          </div>
+          ${!n.dibaca ? '<div style="width:8px;height:8px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:4px"></div>' : ''}
+        </div>
+      </div>
+    `).join('');
+  };
+
+  const toggleNotif = () => {
+    const dd = document.getElementById('notif-dropdown');
+    notifOpen = !notifOpen;
+    dd.style.display = notifOpen ? 'block' : 'none';
+    if (notifOpen) loadNotifikasi();
+  };
+
+  const klikNotif = async (id, suratId) => {
+    await apiFetch(`/notifikasi/${id}/baca`, { method: 'PUT' });
+    document.getElementById('notif-dropdown').style.display = 'none';
+    notifOpen = false;
+    if (suratId) window.location.href = `surat-detail.html?id=${suratId}`;
+    loadNotifikasi();
+  };
+
+  const bacaSemua = async () => {
+    await apiFetch('/notifikasi/baca-semua', { method: 'PUT' });
+    loadNotifikasi();
+    showToast('Semua notifikasi sudah dibaca', 'success');
+  };
+
+  // Tutup dropdown kalau klik di luar
+  document.addEventListener('click', (e) => {
+    const btn = document.getElementById('btn-notif');
+    const dd = document.getElementById('notif-dropdown');
+    if (notifOpen && btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+      dd.style.display = 'none';
+      notifOpen = false;
+    }
+  });
+
+  // Load notifikasi saat halaman dibuka
+  loadNotifikasi();
+  // Refresh notifikasi setiap 2 menit
+  setInterval(loadNotifikasi, 120000);
+
+
+  // Toggle user dropdown
+  let userMenuOpen = false;
+  const toggleUserMenu = () => {
+    userMenuOpen = !userMenuOpen;
+    document.getElementById('user-dropdown').style.display = userMenuOpen ? 'block' : 'none';
+  };
+  document.addEventListener('click', (e) => {
+    const chip = document.getElementById('user-chip-btn');
+    const dd = document.getElementById('user-dropdown');
+    if (userMenuOpen && chip && dd && !chip.contains(e.target) && !dd.contains(e.target)) {
+      dd.style.display = 'none';
+      userMenuOpen = false;
+    }
+  });
+
+</script>
+</body>
+</html>

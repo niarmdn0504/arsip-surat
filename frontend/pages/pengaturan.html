@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengaturan Sekolah — Arsip Surat</title>
+  <meta name="sb-url" content="https://cjgqmdymyybuldbypryf.supabase.co">
+  <meta name="sb-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqZ3FtZHlteXlidWxkYnlwcnlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTE2NTAsImV4cCI6MjA5NTM2NzY1MH0.YKMIf1LcCJxGQzEc3RexMqybtB-Ma-8XCpbv9NP3-VY">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo-icon" id="sidebar-logo-icon">🏫</div>
+      <div class="logo-text">
+        <h2 id="sidebar-nama">Arsip Surat</h2>
+        <p>Manajemen Surat Sekolah</p>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Menu Utama</div>
+    <a href="dashboard.html" class="nav-item" id="nav-dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+    <a href="surat.html?jenis=masuk" class="nav-item" id="nav-surat-masuk"><span class="nav-icon">📥</span> Surat Masuk</a>
+    <a href="surat.html?jenis=keluar" class="nav-item" id="nav-surat-keluar"><span class="nav-icon">📤</span> Surat Keluar</a>
+    <div class="nav-label" style="margin-top:12px;display:none" id="admin-section">Administrasi</div>
+    <a href="users.html" class="nav-item" id="nav-users" style="display:none"><span class="nav-icon">👥</span> Data Pengguna</a>
+    <a href="activity-log.html" class="nav-item" id="nav-log" style="display:none"><span class="nav-icon">📝</span> Log Aktivitas</a>
+    <a href="pengaturan.html" class="nav-item" id="nav-pengaturan" class="nav-item active" style="display:none"><span class="nav-icon">⚙️</span> Pengaturan</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="profil.html" class="nav-item" id="nav-profil"><span class="nav-icon">👤</span> Profil Saya</a>
+    <button type="button" onclick="logout()" class="nav-item" style="width:100%;border:none;background:none;cursor:pointer;color:rgba(255,255,255,0.7);text-align:left;">
+      <span class="nav-icon">🚪</span> Keluar
+    </button>
+  </div>
+</aside>
+
+<header class="navbar">
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <div style="flex:1">
+    <div class="navbar-title">Pengaturan Sekolah</div>
+    <div class="navbar-sub">Kustomisasi branding dan tampilan</div>
+  </div>
+  <div style="position:relative">
+    <div class="user-chip" onclick="toggleUserMenu()" style="cursor:pointer" id="user-chip-btn">
+      <div class="user-avatar" id="user-avatar">A</div>
+      <div class="hidden sm:block">
+        <div style="font-size:13px;font-weight:600" id="user-name">-</div>
+        <div style="font-size:11px;color:#64748b" id="user-role">-</div>
+      </div>
+      <span style="font-size:10px;color:#94a3b8;margin-left:2px">▾</span>
+    </div>
+    <div id="user-dropdown" style="display:none;position:absolute;top:52px;right:0;width:200px;background:white;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,0.15);border:1px solid #e2e8f0;z-index:200;overflow:hidden">
+      <a href="/pages/profil.html" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;font-weight:500;color:#0f172a;text-decoration:none" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+        <span style="font-size:16px">👤</span> Profil Saya
+      </a>
+      <div style="height:1px;background:#f1f5f9;margin:0 12px"></div>
+      <button onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;font-weight:500;color:#ef4444;background:none;border:none;cursor:pointer;width:100%;text-align:left" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
+        <span style="font-size:16px">🚪</span> Keluar
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+<div class="page-content animate-in">
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- FORM PENGATURAN -->
+    <div class="lg:col-span-2" style="display:flex;flex-direction:column;gap:20px">
+
+      <!-- Identitas Sekolah -->
+      <div class="card" style="padding:24px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">🏫 Identitas Sekolah</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:20px">Informasi ini muncul di halaman login, sidebar, dan seluruh tampilan website.</p>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-group col-span-2">
+            <label class="form-label">Nama Lengkap Sekolah <span>*</span></label>
+            <input type="text" id="f-nama" class="form-control" placeholder="SMA Negeri 1 Contoh">
+          </div>
+          <div class="form-group col-span-2 sm:col-span-1">
+            <label class="form-label">Nama Singkat <span>*</span></label>
+            <input type="text" id="f-nama-singkat" class="form-control" placeholder="SMAN 1 Contoh">
+            <p style="font-size:11.5px;color:#94a3b8;margin-top:4px">Tampil di sidebar dan header</p>
+          </div>
+          <div class="form-group col-span-2 sm:col-span-1">
+            <label class="form-label">Tagline / Slogan</label>
+            <input type="text" id="f-tagline" class="form-control" placeholder="Sistem Arsip Surat Digital">
+          </div>
+          <div class="form-group col-span-2">
+            <label class="form-label">Alamat Sekolah</label>
+            <input type="text" id="f-alamat" class="form-control" placeholder="Jl. Pendidikan No. 1, Kota...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Logo -->
+      <div class="card" style="padding:24px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">🖼 Logo Sekolah</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:16px">Upload logo format PNG atau JPG. Ukuran ideal 200×200px. Maksimal 2MB.</p>
+
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          <!-- Preview Logo -->
+          <div id="logo-preview-wrap" style="width:100px;height:100px;border-radius:16px;border:2px dashed #e2e8f0;display:flex;align-items:center;justify-content:center;background:#f8fafc;flex-shrink:0;overflow:hidden">
+            <span id="logo-placeholder" style="font-size:40px">🏫</span>
+            <img id="logo-preview-img" src="" alt="Logo" style="display:none;width:100%;height:100%;object-fit:contain;padding:8px">
+          </div>
+
+          <div style="flex:1">
+            <input type="file" id="logo-file" accept="image/png,image/jpeg,image/jpg,image/svg+xml" style="display:none" onchange="handleLogoSelect(this)">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button onclick="document.getElementById('logo-file').click()" class="btn btn-secondary btn-sm" style="width:fit-content">
+                📁 Pilih File Logo
+              </button>
+              <button onclick="hapusLogo()" id="btn-hapus-logo" class="btn btn-sm" style="width:fit-content;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;display:none">
+                🗑 Hapus Logo
+              </button>
+              <div id="logo-status" style="font-size:12px;color:#94a3b8">Belum ada logo terpilih</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warna Tema -->
+      <div class="card" style="padding:24px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">🎨 Warna Tema</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:16px">Sesuaikan warna dengan identitas sekolah kamu.</p>
+
+        <!-- Preset Warna -->
+        <div style="margin-bottom:20px">
+          <label class="form-label" style="margin-bottom:10px">Pilih Preset Warna</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px" id="preset-colors">
+            <button onclick="pilihPreset('biru')"    class="preset-btn" data-preset="biru"    style="background:linear-gradient(135deg,#1e3a8a,#0e7490);width:40px;height:40px;border-radius:10px;border:2px solid transparent;cursor:pointer" title="Biru (Default)"></button>
+            <button onclick="pilihPreset('hijau')"   class="preset-btn" data-preset="hijau"   style="background:linear-gradient(135deg,#14532d,#059669);width:40px;height:40px;border-radius:10px;border:2px solid transparent;cursor:pointer" title="Hijau"></button>
+            <button onclick="pilihPreset('merah')"   class="preset-btn" data-preset="merah"   style="background:linear-gradient(135deg,#7f1d1d,#dc2626);width:40px;height:40px;border-radius:10px;border:2px solid transparent;cursor:pointer" title="Merah"></button>
+            <button onclick="pilihPreset('ungu')"    class="preset-btn" data-preset="ungu"    style="background:linear-gradient(135deg,#3b0764,#7c3aed);width:40px;height:40px;border-radius:10px;border:2px solid transparent;cursor:pointer" title="Ungu"></button>
+            <button onclick="pilihPreset('orange')"  class="preset-btn" data-preset="orange"  style="background:linear-gradient(135deg,#7c2d12,#ea580c);width:40px;height:40px;border-radius:10px;border:2px solid transparent;cursor:pointer" title="Orange"></button>
+            <button onclick="pilihPreset('teal')"    class="preset-btn" data-preset="teal"    style="background:linear-gradient(135deg,#134e4a,#0d9488);width:40px;height:40px;border-radius:10px;border:2px solid transparent;cursor:pointer" title="Teal"></button>
+            <button onclick="pilihPreset('coklat')"  class="preset-btn" data-preset="coklat"  style="background:linear-gradient(135deg,#451a03,#92400e);width:40px;height:40px;border-radius:10px;border:2px solid transparent;cursor:pointer" title="Coklat"></button>
+            <button onclick="pilihPreset('custom')"  class="preset-btn" data-preset="custom"  style="background:linear-gradient(135deg,#374151,#6b7280);width:40px;height:40px;border-radius:10px;border:2px solid transparent;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" title="Custom">🎨</button>
+          </div>
+        </div>
+
+        <!-- Warna Custom -->
+        <div id="custom-colors" style="display:none">
+          <div class="grid grid-cols-3 gap-4">
+            <div class="form-group">
+              <label class="form-label" style="font-size:12px">Warna Utama</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input type="color" id="c-utama" value="#1e3a8a" style="width:40px;height:36px;border-radius:8px;border:1.5px solid #e2e8f0;cursor:pointer;padding:2px">
+                <input type="text" id="c-utama-hex" class="form-control" value="#1e3a8a" style="font-size:12px;font-family:monospace" oninput="syncColor('utama')">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size:12px">Warna Muda</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input type="color" id="c-muda" value="#1e40af" style="width:40px;height:36px;border-radius:8px;border:1.5px solid #e2e8f0;cursor:pointer;padding:2px">
+                <input type="text" id="c-muda-hex" class="form-control" value="#1e40af" style="font-size:12px;font-family:monospace" oninput="syncColor('muda')">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size:12px">Warna Aksen</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input type="color" id="c-aksen" value="#0e7490" style="width:40px;height:36px;border-radius:8px;border:1.5px solid #e2e8f0;cursor:pointer;padding:2px">
+                <input type="text" id="c-aksen-hex" class="form-control" value="#0e7490" style="font-size:12px;font-family:monospace" oninput="syncColor('aksen')">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview warna aktif -->
+        <div id="warna-aktif-preview" style="margin-top:8px;padding:12px 16px;border-radius:10px;font-size:13px;color:white;font-weight:600;display:flex;align-items:center;gap:8px">
+          <span>🎨</span> <span id="warna-label">Biru (Default)</span>
+        </div>
+      </div>
+
+      <!-- Tombol Simpan -->
+      <div style="display:flex;justify-content:flex-end;gap:10px">
+        <button onclick="resetPengaturan()" class="btn btn-secondary">↺ Reset Default</button>
+        <button onclick="simpanPengaturan()" id="btn-simpan" class="btn btn-primary" style="min-width:160px">
+          <span id="btn-simpan-text">💾 Simpan Pengaturan</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- PREVIEW PANEL -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Preview Login -->
+      <div class="card" style="padding:20px">
+        <h3 style="font-size:13px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px">Preview Halaman Login</h3>
+        <div id="preview-login" style="border-radius:14px;padding:20px;text-align:center;background:linear-gradient(135deg,#1e3a8a,#1e40af,#0e7490)">
+          <div id="prev-logo" style="width:56px;height:56px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:26px;overflow:hidden">🏫</div>
+          <div id="prev-nama" style="color:white;font-weight:800;font-size:14px;line-height:1.3">SMA Negeri 1 Contoh</div>
+          <div id="prev-tagline" style="color:rgba(255,255,255,0.7);font-size:11px;margin-top:3px">Sistem Arsip Surat Digital</div>
+          <!-- Mini form preview -->
+          <div style="background:white;border-radius:10px;padding:12px;margin-top:12px;text-align:left">
+            <div style="height:8px;background:#f1f5f9;border-radius:4px;margin-bottom:8px"></div>
+            <div style="height:28px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;margin-bottom:8px"></div>
+            <div style="height:28px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;margin-bottom:10px"></div>
+            <div id="prev-btn" style="height:32px;border-radius:7px;background:linear-gradient(135deg,#1e3a8a,#1e40af);display:flex;align-items:center;justify-content:center">
+              <div style="width:60px;height:8px;background:rgba(255,255,255,0.5);border-radius:4px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Sidebar -->
+      <div class="card" style="padding:20px">
+        <h3 style="font-size:13px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px">Preview Sidebar</h3>
+        <div id="preview-sidebar" style="border-radius:12px;padding:14px;background:#1e3a8a">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1)">
+            <div id="prev-sidebar-logo" style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;flex-shrink:0">🏫</div>
+            <div>
+              <div id="prev-sidebar-nama" style="color:white;font-size:12px;font-weight:700">SMAN 1 Contoh</div>
+              <div id="prev-sidebar-tagline" style="color:rgba(255,255,255,0.5);font-size:10px">Sistem Arsip Surat Digital</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.15);color:white;font-size:11px;font-weight:600">📊 Dashboard</div>
+            <div style="padding:6px 10px;border-radius:8px;color:rgba(255,255,255,0.6);font-size:11px">📋 Semua Surat</div>
+            <div style="padding:6px 10px;border-radius:8px;color:rgba(255,255,255,0.6);font-size:11px">📥 Surat Masuk</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px">
+        <p style="font-size:12.5px;color:#1e40af;font-weight:600;margin-bottom:6px">💡 Tips</p>
+        <ul style="font-size:12px;color:#3b82f6;line-height:1.7;padding-left:14px">
+          <li>Logo terbaik format PNG transparan</li>
+          <li>Ukuran ideal 200×200 piksel</li>
+          <li>Pengaturan tersimpan di database (berlaku semua user)</li>
+          <li>Berlaku di semua halaman otomatis</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</main>
+
+<div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+<script src="../js/branding.js"></script>
+<script src="../js/api.js"></script>
+<script>
+  if (!requireAuth()) throw new Error();
+  const user = getUser();
+  if (user?.role !== 'admin') window.location.href = 'dashboard.html';
+  setUserInfo();
+
+  const toggleSidebar = () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  };
+  const closeSidebar = () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  };
+
+  // Preset warna
+  const PRESETS = {
+    biru:    { utama: '#1e3a8a', muda: '#1e40af', aksen: '#0e7490', label: 'Biru (Default)' },
+    hijau:   { utama: '#14532d', muda: '#16a34a', aksen: '#059669', label: 'Hijau' },
+    merah:   { utama: '#7f1d1d', muda: '#dc2626', aksen: '#b91c1c', label: 'Merah' },
+    ungu:    { utama: '#3b0764', muda: '#7c3aed', aksen: '#6d28d9', label: 'Ungu' },
+    orange:  { utama: '#7c2d12', muda: '#ea580c', aksen: '#d97706', label: 'Orange' },
+    teal:    { utama: '#134e4a', muda: '#0d9488', aksen: '#0891b2', label: 'Teal' },
+    coklat:  { utama: '#451a03', muda: '#92400e', aksen: '#b45309', label: 'Coklat' },
+    custom:  { utama: '#1e3a8a', muda: '#1e40af', aksen: '#0e7490', label: 'Custom' }
+  };
+
+  let selectedPreset = 'biru';
+  let logoBase64 = '';
+  let logoFileName = '';
+
+  // Load pengaturan dari database via API
+  const loadPengaturan = async () => {
+    try {
+      const res = await apiFetch('/pengaturan');
+      let config = null;
+      if (res?.ok && res.data?.data) {
+        config = res.data.data;
+        // Simpan juga ke localStorage sebagai cache
+        localStorage.setItem('sekolah_config', JSON.stringify(config));
+      } else {
+        // Fallback ke localStorage
+        const saved = localStorage.getItem('sekolah_config');
+        if (saved) config = JSON.parse(saved);
+      }
+
+      if (config) {
+        document.getElementById('f-nama').value = config.nama || '';
+        document.getElementById('f-nama-singkat').value = config.nama_singkat || '';
+        document.getElementById('f-tagline').value = config.tagline || '';
+        document.getElementById('f-alamat').value = config.alamat || '';
+
+        if (config.logo) {
+          logoBase64 = config.logo;
+          tampilkanPreviewLogo(config.logo);
+        }
+
+        if (config.warna) {
+          selectedPreset = config._preset || 'custom';
+          updatePreviewWarna(config.warna.utama, config.warna.utama_muda, config.warna.aksen);
+          highlightPreset(selectedPreset);
+        }
+      } else {
+        document.getElementById('f-nama').value = 'SMA Negeri 1 Contoh';
+        document.getElementById('f-nama-singkat').value = 'SMAN 1 Contoh';
+        document.getElementById('f-tagline').value = 'Sistem Arsip Surat Digital';
+      }
+    } catch(e) {
+      console.error('Gagal load pengaturan:', e);
+    }
+    updateAllPreviews();
+  };
+
+  // Handle pilih logo
+  const handleLogoSelect = (input) => {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { showToast('Logo maksimal 2MB', 'warning'); return; }
+
+    logoFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      logoBase64 = e.target.result;
+      tampilkanPreviewLogo(logoBase64);
+      document.getElementById('logo-status').textContent = `✅ ${file.name}`;
+      document.getElementById('logo-status').style.color = '#10b981';
+      updateAllPreviews();
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const tampilkanPreviewLogo = (src) => {
+    const img = document.getElementById('logo-preview-img');
+    const placeholder = document.getElementById('logo-placeholder');
+    img.src = src;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+    document.getElementById('btn-hapus-logo').style.display = 'inline-flex';
+  };
+
+  const hapusLogo = () => {
+    logoBase64 = '';
+    logoFileName = '';
+    document.getElementById('logo-preview-img').style.display = 'none';
+    document.getElementById('logo-placeholder').style.display = 'block';
+    document.getElementById('btn-hapus-logo').style.display = 'none';
+    document.getElementById('logo-status').textContent = 'Logo dihapus';
+    document.getElementById('logo-status').style.color = '#94a3b8';
+    document.getElementById('logo-file').value = '';
+    updateAllPreviews();
+  };
+
+  // Pilih preset warna
+  const pilihPreset = (nama) => {
+    selectedPreset = nama;
+    highlightPreset(nama);
+    if (nama === 'custom') {
+      document.getElementById('custom-colors').style.display = 'block';
+    } else {
+      document.getElementById('custom-colors').style.display = 'none';
+      const p = PRESETS[nama];
+      updatePreviewWarna(p.utama, p.muda, p.aksen);
+    }
+    updateAllPreviews();
+  };
+
+  const highlightPreset = (nama) => {
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.style.border = btn.dataset.preset === nama ? '2px solid white' : '2px solid transparent';
+      btn.style.transform = btn.dataset.preset === nama ? 'scale(1.15)' : 'scale(1)';
+    });
+  };
+
+  const syncColor = (type) => {
+    const map = { utama: ['c-utama','c-utama-hex'], muda: ['c-muda','c-muda-hex'], aksen: ['c-aksen','c-aksen-hex'] };
+    const [colorId, hexId] = map[type];
+    const val = document.getElementById(hexId).value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+      document.getElementById(colorId).value = val;
+      updatePreviewWarna(
+        document.getElementById('c-utama').value,
+        document.getElementById('c-muda').value,
+        document.getElementById('c-aksen').value
+      );
+    }
+  };
+
+  const updatePreviewWarna = (utama, muda, aksen) => {
+    const label = PRESETS[selectedPreset]?.label || 'Custom';
+    document.getElementById('warna-aktif-preview').style.background = `linear-gradient(135deg, ${utama}, ${aksen})`;
+    document.getElementById('warna-label').textContent = label;
+
+    // Update preview panels
+    document.getElementById('preview-login').style.background = `linear-gradient(135deg, ${utama}, ${muda}, ${aksen})`;
+    document.getElementById('prev-btn').style.background = `linear-gradient(135deg, ${utama}, ${muda})`;
+    document.getElementById('preview-sidebar').style.background = utama;
+
+    // Update color inputs kalau custom
+    document.getElementById('c-utama').value = utama;
+    document.getElementById('c-utama-hex').value = utama;
+    document.getElementById('c-muda').value = muda;
+    document.getElementById('c-muda-hex').value = muda;
+    document.getElementById('c-aksen').value = aksen;
+    document.getElementById('c-aksen-hex').value = aksen;
+  };
+
+  const updateAllPreviews = () => {
+    const nama = document.getElementById('f-nama').value || 'Nama Sekolah';
+    const namaSingkat = document.getElementById('f-nama-singkat').value || 'Nama Singkat';
+    const tagline = document.getElementById('f-tagline').value || 'Tagline sekolah';
+
+    // Update preview login
+    document.getElementById('prev-nama').textContent = nama;
+    document.getElementById('prev-tagline').textContent = tagline;
+    document.getElementById('prev-sidebar-nama').textContent = namaSingkat;
+    document.getElementById('prev-sidebar-tagline').textContent = tagline;
+
+    // Logo di preview
+    const logoPreviewFn = (el, placeholderEl) => {
+      if (logoBase64) {
+        el.innerHTML = `<img src="${logoBase64}" style="width:100%;height:100%;object-fit:contain;padding:2px">`;
+      } else {
+        el.innerHTML = '🏫';
+      }
+    };
+    logoPreviewFn(document.getElementById('prev-logo'));
+    logoPreviewFn(document.getElementById('prev-sidebar-logo'));
+  };
+
+  // Simpan pengaturan ke DATABASE via API
+  const simpanPengaturan = async () => {
+    const nama = document.getElementById('f-nama').value.trim();
+    const namaSingkat = document.getElementById('f-nama-singkat').value.trim();
+    if (!nama || !namaSingkat) { showToast('Nama sekolah wajib diisi', 'warning'); return; }
+
+    const p = selectedPreset === 'custom'
+      ? { utama: document.getElementById('c-utama').value, muda: document.getElementById('c-muda').value, aksen: document.getElementById('c-aksen').value }
+      : { utama: PRESETS[selectedPreset].utama, muda: PRESETS[selectedPreset].muda, aksen: PRESETS[selectedPreset].aksen };
+
+    const config = {
+      nama,
+      nama_singkat: namaSingkat,
+      tagline: document.getElementById('f-tagline').value.trim(),
+      alamat: document.getElementById('f-alamat').value.trim(),
+      logo: logoBase64,
+      warna: { utama: p.utama, utama_muda: p.muda, aksen: p.aksen },
+      _preset: selectedPreset
+    };
+
+    const btn = document.getElementById('btn-simpan');
+    const btnText = document.getElementById('btn-simpan-text');
+    btn.disabled = true;
+    btnText.innerHTML = '<span class="spinner"></span> Menyimpan...';
+
+    try {
+      const res = await apiFetch('/pengaturan', {
+        method: 'POST',
+        body: JSON.stringify(config)
+      });
+
+      if (res?.ok) {
+        // Simpan ke localStorage sebagai cache
+        localStorage.setItem('sekolah_config', JSON.stringify(config));
+        // Update _savedBranding langsung agar berlaku tanpa refresh
+        window._savedBranding = config;
+        window._fetchingBranding = false;
+        btnText.innerHTML = '✅ Tersimpan!';
+        showToast('Pengaturan berhasil disimpan! Berlaku di semua halaman.', 'success');
+        // Terapkan branding langsung ke halaman ini
+        if (typeof terapkanBranding === 'function') terapkanBranding();
+        setTimeout(() => {
+          btn.disabled = false;
+          btnText.textContent = '💾 Simpan Pengaturan';
+        }, 2000);
+      } else {
+        throw new Error(res?.data?.error || 'Gagal menyimpan');
+      }
+    } catch(e) {
+      btn.disabled = false;
+      btnText.textContent = '💾 Simpan Pengaturan';
+      showToast(e.message || 'Gagal menyimpan pengaturan', 'error');
+    }
+  };
+
+  const resetPengaturan = async () => {
+    const ok = await confirmDelete('Reset semua pengaturan ke default?');
+    if (!ok) return;
+    await apiFetch('/pengaturan/reset', { method: 'DELETE' }).catch(() => {});
+    localStorage.removeItem('sekolah_config');
+    showToast('Pengaturan direset ke default', 'success');
+    setTimeout(() => location.reload(), 1000);
+  };
+
+  // Event listeners realtime preview
+  ['f-nama','f-nama-singkat','f-tagline'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updateAllPreviews);
+  });
+  document.getElementById('c-utama').addEventListener('input', (e) => {
+    document.getElementById('c-utama-hex').value = e.target.value;
+    updatePreviewWarna(e.target.value, document.getElementById('c-muda').value, document.getElementById('c-aksen').value);
+  });
+  document.getElementById('c-muda').addEventListener('input', (e) => {
+    document.getElementById('c-muda-hex').value = e.target.value;
+    updatePreviewWarna(document.getElementById('c-utama').value, e.target.value, document.getElementById('c-aksen').value);
+  });
+  document.getElementById('c-aksen').addEventListener('input', (e) => {
+    document.getElementById('c-aksen-hex').value = e.target.value;
+    updatePreviewWarna(document.getElementById('c-utama').value, document.getElementById('c-muda').value, e.target.value);
+  });
+
+  loadPengaturan();
+  highlightPreset(selectedPreset);
+
+  let userMenuOpen = false;
+  const toggleUserMenu = () => {
+    userMenuOpen = !userMenuOpen;
+    document.getElementById('user-dropdown').style.display = userMenuOpen ? 'block' : 'none';
+  };
+  document.addEventListener('click', (e) => {
+    const chip = document.getElementById('user-chip-btn');
+    const dd = document.getElementById('user-dropdown');
+    if (userMenuOpen && chip && dd && !chip.contains(e.target) && !dd.contains(e.target)) {
+      dd.style.display = 'none';
+      userMenuOpen = false;
+    }
+  });
+
+</script>
+</body>
+</html>
