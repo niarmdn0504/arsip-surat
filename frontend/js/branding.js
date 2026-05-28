@@ -70,18 +70,32 @@ const SEKOLAH_CONFIG = {
 // ============================================
 const terapkanBranding = () => {
 
-  // Fetch dari API jika belum ada di localStorage (contoh: browser baru)
+  // Fetch dari API jika belum ada di localStorage (contoh: browser baru / HP lain)
   if (!window._savedBranding && !window._fetchingBranding) {
     window._fetchingBranding = true;
-    fetch('/api/pengaturan?_t=' + Date.now())
+    // Pakai API_URL yang sama dengan api.js agar tidak salah path di Vercel
+    const _apiBase = (typeof API_URL !== 'undefined')
+      ? API_URL
+      : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:3000/api'
+          : 'https://arsipsurat-kmp.vercel.app/api');
+    const _token = localStorage.getItem('token');
+    fetch(`${_apiBase}/pengaturan?_t=${Date.now()}`, {
+      headers: _token ? { 'Authorization': `Bearer ${_token}` } : {}
+    })
       .then(res => res.json())
       .then(res => {
-        if (res?.data) {
-          localStorage.setItem('sekolah_config', JSON.stringify(res.data));
-          window._savedBranding = res.data;
-          terapkanBranding();
+        const _config = res?.data?.data || res?.data || null;
+        if (_config) {
+          localStorage.setItem('sekolah_config', JSON.stringify(_config));
+          window._savedBranding = _config;
         }
-      }).catch(err => console.log('Gagal ambil pengaturan', err));
+        window._fetchingBranding = false;
+        terapkanBranding();
+      }).catch(err => {
+        window._fetchingBranding = false;
+        console.log('Gagal ambil pengaturan branding:', err);
+      });
   }
 
   // Merge dengan data tersimpan dari localStorage (set via halaman Pengaturan)
