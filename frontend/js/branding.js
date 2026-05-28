@@ -78,7 +78,7 @@ const terapkanBranding = () => {
       ? API_URL
       : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
           ? 'http://localhost:3000/api'
-          : 'https://arsipsurat-kmp.vercel.app/api');
+          : window.location.origin + '/api');
     const _token = localStorage.getItem('token');
     fetch(`${_apiBase}/pengaturan?_t=${Date.now()}`, {
       headers: _token ? { 'Authorization': `Bearer ${_token}` } : {}
