@@ -98,4 +98,35 @@ router.delete('/delete', async (req, res) => {
   }
 });
 
+// POST /api/upload/pdf-base64 - upload via Base64 to bypass Multer on Vercel
+router.post('/pdf-base64', async (req, res) => {
+  try {
+    const { fileData, fileName } = req.body;
+    if (!fileData) return res.status(400).json({ error: 'File data kosong.' });
+    
+    // fileData format: "data:application/pdf;base64,JVBER..."
+    const base64String = fileData.includes(',') ? fileData.split(',')[1] : fileData;
+    const buffer = Buffer.from(base64String, 'base64');
+    
+    const timestamp = Date.now();
+    const originalName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const safeName = `${timestamp}_${originalName}`;
+    const filePath = `surat/${new Date().getFullYear()}/${safeName}`;
+
+    const { data, error } = await supabase.storage
+      .from('surat-files')
+      .upload(filePath, buffer, {
+        contentType: 'application/pdf',
+        upsert: false
+      });
+
+    if (error) throw error;
+
+    res.json({ success: true, file_path: filePath, message: 'File berhasil diupload.' });
+  } catch (err) {
+    console.error('Base64 upload error:', err);
+    res.status(500).json({ error: 'Gagal mengupload file PDF.' });
+  }
+});
+
 module.exports = router;

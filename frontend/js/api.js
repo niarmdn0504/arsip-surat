@@ -94,7 +94,7 @@ const showToast = (message, type = 'success') => {
   };
 
   toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl text-white text-sm shadow-lg 
-    ${colors[type]} transform translate-x-full transition-transform duration-300`;
+    ${colors[type]} transform translate-x-full transition-transform duration-300 z-[9999]`;
   toast.innerHTML = `<span>${icons[type]}</span><span>${message}</span>`;
   container.appendChild(toast);
 
@@ -109,11 +109,11 @@ const showToast = (message, type = 'success') => {
 };
 
 const createToastContainer = () => {
-  const div = document.createElement('div');
-  div.id = 'toast-container';
-  div.className = 'fixed top-4 right-4 z-50 flex flex-col gap-2';
-  document.body.appendChild(div);
-  return div;
+  const c = document.createElement('div');
+  c.id = 'toast-container';
+  c.className = 'fixed top-4 right-4 z-[9999] flex flex-col gap-2';
+  document.body.appendChild(c);
+  return c;
 };
 
 // ============================================
@@ -191,8 +191,19 @@ const setUserInfo = () => {
 
 // Logout
 const logout = async () => {
-  await apiFetch('/auth/logout', { method: 'POST' });
+  try {
+    await apiFetch('/auth/logout', { method: 'POST' });
+  } catch (err) {}
   localStorage.clear();
   window.location.href = '/pages/login.html';
 };
 window.logout = logout;
+
+// Tangkap klik tombol Keluar di mana saja agar pasti bekerja
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (btn && (btn.getAttribute('onclick') === 'logout()' || btn.textContent.includes('Keluar'))) {
+    e.preventDefault();
+    logout();
+  }
+});

@@ -70,6 +70,20 @@ const SEKOLAH_CONFIG = {
 // ============================================
 const terapkanBranding = () => {
 
+  // Fetch dari API jika belum ada di localStorage (contoh: browser baru)
+  if (!window._savedBranding && !window._fetchingBranding) {
+    window._fetchingBranding = true;
+    fetch('/api/pengaturan?_t=' + Date.now())
+      .then(res => res.json())
+      .then(res => {
+        if (res?.data) {
+          localStorage.setItem('sekolah_config', JSON.stringify(res.data));
+          window._savedBranding = res.data;
+          terapkanBranding();
+        }
+      }).catch(err => console.log('Gagal ambil pengaturan', err));
+  }
+
   // Merge dengan data tersimpan dari localStorage (set via halaman Pengaturan)
   if (window._savedBranding) {
     const s = window._savedBranding;
