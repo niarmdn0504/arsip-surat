@@ -190,36 +190,9 @@ const setUserInfo = () => {
 };
 
 // Logout
-let _loggingOut = false;
-const logout = async () => {
-  if (_loggingOut) return;
-  _loggingOut = true;
-  try {
-    await apiFetch('/auth/logout', { method: 'POST' });
-  } catch (err) {}
+const logout = () => {
+  apiFetch('/auth/logout', { method: 'POST' }).catch(() => {});
   localStorage.clear();
   window.location.href = '/pages/login.html';
 };
 window.logout = logout;
-
-// Tangkap klik tombol Keluar di mana saja agar pasti bekerja
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('button, a');
-  if (!btn) return;
-  const onclickAttr = btn.getAttribute('onclick') || '';
-  // Hanya tangkap jika onclick="logout()" ATAU teks persis "Keluar" / "Logout"
-  // Jangan tangkap badge "📤 Keluar" atau nav item lain
-  const txtTrim = btn.textContent.replace(/\s+/g, ' ').trim();
-  const isLogoutBtn =
-    onclickAttr === 'logout()' ||
-    txtTrim === 'Keluar' ||
-    txtTrim === '🚪 Keluar' ||
-    txtTrim === 'Logout' ||
-    btn.id === 'btn-logout' ||
-    btn.classList.contains('btn-logout');
-  if (isLogoutBtn) {
-    e.preventDefault();
-    e.stopPropagation();
-    logout();
-  }
-});
