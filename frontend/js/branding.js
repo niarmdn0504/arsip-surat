@@ -1,14 +1,19 @@
 // ============================================
-// BRANDING - Baca dari localStorage dulu
-// Jika admin sudah set via halaman Pengaturan,
-// gunakan itu. Kalau belum, pakai default di bawah.
+// BRANDING - Sembunyikan page sampai branding ke-load
 // ============================================
 (function() {
+  // Sembunyikan body dulu kalau belum ada data di localStorage
   const saved = localStorage.getItem('sekolah_config');
+  if (!saved) {
+    const style = document.createElement('style');
+    style.id = 'branding-prevent-fouc';
+    style.textContent = 'body{opacity:0!important;transition:opacity .2s}';
+    document.head.appendChild(style);
+  }
+
   if (saved) {
     try {
       const c = JSON.parse(saved);
-      // Patch SEKOLAH_CONFIG setelah file diload
       window._savedBranding = c;
     } catch(e) {}
   }
@@ -122,6 +127,9 @@ const _applyBrandingToDOM = () => {
 
   // 7. Update favicon
   _updateFavicon();
+
+  // 8. Tampilkan body (sembunyikan FOUC shield)
+  document.body.style.opacity = '1';
 };
 
 // Update logo di halaman manapun
