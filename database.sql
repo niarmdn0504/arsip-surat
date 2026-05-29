@@ -60,6 +60,18 @@ CREATE TABLE IF NOT EXISTS public.notifikasi (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 5. TABEL KATEGORI SURAT
+CREATE TABLE IF NOT EXISTS public.kategori_surat (
+    id UUID PRIMARY KEY DEFAULT gen_gen_uuid(),
+    nama VARCHAR(100) UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.kategori_surat ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Auth read kategori" ON public.kategori_surat FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Auth insert kategori" ON public.kategori_surat FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Auth delete kategori" ON public.kategori_surat FOR DELETE TO authenticated USING (true);
+
 -- ============================================
 -- INDEX untuk performa
 -- ============================================

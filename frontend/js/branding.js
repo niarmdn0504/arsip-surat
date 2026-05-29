@@ -68,47 +68,9 @@ const SEKOLAH_CONFIG = {
 // FUNGSI TERAPKAN BRANDING
 // Dipanggil otomatis saat halaman dibuka
 // ============================================
-const terapkanBranding = () => {
 
-  // Fetch dari API jika belum ada di localStorage (contoh: browser baru / HP lain)
-  if (!window._savedBranding && !window._fetchingBranding && !window._brandingFetched) {
-    window._fetchingBranding = true;
-    window._brandingFetched = true;
-    const _apiBase = (typeof API_URL !== 'undefined')
-      ? API_URL
-      : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-          ? 'http://localhost:3000/api'
-          : window.location.origin + '/api');
-    fetch(`${_apiBase}/pengaturan?_t=${Date.now()}`)
-      .then(res => res.json())
-      .then(res => {
-        const _config = res?.data?.data || res?.data || null;
-        if (_config) {
-          localStorage.setItem('sekolah_config', JSON.stringify(_config));
-          window._savedBranding = _config;
-        }
-        window._fetchingBranding = false;
-        terapkanBranding();
-      }).catch(() => {
-        window._fetchingBranding = false;
-      });
-  }
-
-  // Merge dengan data tersimpan dari localStorage (set via halaman Pengaturan)
-  if (window._savedBranding) {
-    const s = window._savedBranding;
-    if (s.nama)        SEKOLAH_CONFIG.nama        = s.nama;
-    if (s.nama_singkat)SEKOLAH_CONFIG.nama_singkat = s.nama_singkat;
-    if (s.tagline)     SEKOLAH_CONFIG.tagline      = s.tagline;
-    if (s.alamat)      SEKOLAH_CONFIG.alamat       = s.alamat;
-    if (s.logo)        SEKOLAH_CONFIG.logo         = s.logo;
-    if (s.warna) {
-      SEKOLAH_CONFIG.warna.utama      = s.warna.utama      || SEKOLAH_CONFIG.warna.utama;
-      SEKOLAH_CONFIG.warna.utama_muda = s.warna.utama_muda || SEKOLAH_CONFIG.warna.utama_muda;
-      SEKOLAH_CONFIG.warna.aksen      = s.warna.aksen      || SEKOLAH_CONFIG.warna.aksen;
-    }
-  }
-
+// Apply branding langsung dari SEKOLAH_CONFIG ke DOM
+const _applyBrandingToDOM = () => {
   // 1. Update CSS variable warna
   const root = document.documentElement;
   root.style.setProperty('--primary-dark',  SEKOLAH_CONFIG.warna.utama);
@@ -215,6 +177,61 @@ const _updateNamaSidebar = () => {
 
   const taglineEl = document.querySelector('.logo-text p');
   if (taglineEl) taglineEl.textContent = SEKOLAH_CONFIG.tagline;
+};
+
+// ============================================
+// MAIN: terapkanBranding
+// 1. Apply dari localStorage (instant)
+// 2. Fetch dari API (async), apply setelah selesai
+// ============================================
+const terapkanBranding = () => {
+  // Merge dari localStorage
+  if (window._savedBranding) {
+    const s = window._savedBranding;
+    if (s.nama)         SEKOLAH_CONFIG.nama         = s.nama;
+    if (s.nama_singkat) SEKOLAH_CONFIG.nama_singkat = s.nama_singkat;
+    if (s.tagline)      SEKOLAH_CONFIG.tagline      = s.tagline;
+    if (s.alamat)       SEKOLAH_CONFIG.alamat       = s.alamat;
+    if (s.logo)         SEKOLAH_CONFIG.logo         = s.logo;
+    if (s.warna) {
+      SEKOLAH_CONFIG.warna.utama      = s.warna.utama      || SEKOLAH_CONFIG.warna.utama;
+      SEKOLAH_CONFIG.warna.utama_muda = s.warna.utama_muda || SEKOLAH_CONFIG.warna.utama_muda;
+      SEKOLAH_CONFIG.warna.aksen      = s.warna.aksen      || SEKOLAH_CONFIG.warna.aksen;
+    }
+  }
+  _applyBrandingToDOM();
+
+  // Fetch dari API jika localStorage kosong (login page, browser baru)
+  if (!window._savedBranding && !window._fetchingBranding) {
+    window._fetchingBranding = true;
+    const _apiBase = (typeof API_URL !== 'undefined')
+      ? API_URL
+      : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:3000/api'
+          : window.location.origin + '/api');
+    fetch(`${_apiBase}/pengaturan?_t=${Date.now()}`)
+      .then(r => r.json())
+      .then(res => {
+        const cfg = res?.data?.data || res?.data || null;
+        if (cfg) {
+          localStorage.setItem('sekolah_config', JSON.stringify(cfg));
+          window._savedBranding = cfg;
+          if (cfg.nama)         SEKOLAH_CONFIG.nama         = cfg.nama;
+          if (cfg.nama_singkat) SEKOLAH_CONFIG.nama_singkat = cfg.nama_singkat;
+          if (cfg.tagline)      SEKOLAH_CONFIG.tagline      = cfg.tagline;
+          if (cfg.alamat)       SEKOLAH_CONFIG.alamat       = cfg.alamat;
+          if (cfg.logo)         SEKOLAH_CONFIG.logo         = cfg.logo;
+          if (cfg.warna) {
+            SEKOLAH_CONFIG.warna.utama      = cfg.warna.utama      || SEKOLAH_CONFIG.warna.utama;
+            SEKOLAH_CONFIG.warna.utama_muda = cfg.warna.utama_muda || SEKOLAH_CONFIG.warna.utama_muda;
+            SEKOLAH_CONFIG.warna.aksen      = cfg.warna.aksen      || SEKOLAH_CONFIG.warna.aksen;
+          }
+          _applyBrandingToDOM();
+        }
+      })
+      .catch(() => {})
+      .finally(() => { window._fetchingBranding = false; });
+  }
 };
 
 // Panggil saat DOM siap

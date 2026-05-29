@@ -183,7 +183,7 @@
         <!-- Nomor Surat -->
         <div class="form-group col-span-2 sm:col-span-1">
           <label class="form-label">Nomor Surat <span>*</span></label>
-          <input type="text" id="f-nomor" class="form-control" placeholder="001/SK/2024">
+          <input type="text" id="f-nomor" class="form-control" placeholder="001/SK/">
         </div>
         <!-- Jenis -->
         <div class="form-group col-span-2 sm:col-span-1">
@@ -221,14 +221,22 @@
         <!-- Kategori -->
         <div class="form-group">
           <label class="form-label">Kategori</label>
-          <select id="f-kategori" class="form-control">
-            <option value="umum">Umum</option>
-            <option value="undangan">Undangan</option>
-            <option value="keputusan">Keputusan</option>
-            <option value="edaran">Edaran</option>
-            <option value="pemberitahuan">Pemberitahuan</option>
-            <option value="permohonan">Permohonan</option>
-          </select>
+          <div style="display:flex;gap:6px">
+            <select id="f-kategori" class="form-control" style="flex:1">
+              <option value="umum">Umum</option>
+              <option value="undangan">Undangan</option>
+              <option value="keputusan">Keputusan</option>
+              <option value="edaran">Edaran</option>
+              <option value="pemberitahuan">Pemberitahuan</option>
+              <option value="permohonan">Permohonan</option>
+            </select>
+            <button type="button" onclick="showAddKategori()" style="padding:6px 10px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;cursor:pointer;font-size:13px" title="Tambah kategori baru">+</button>
+          </div>
+          <div id="add-kategori-form" style="display:none;margin-top:6px;display:none;gap:6px">
+            <input type="text" id="f-kategori-baru" class="form-control" placeholder="Nama kategori baru" style="flex:1;padding:6px 10px;font-size:13px">
+            <button type="button" onclick="addKategori()" style="padding:6px 12px;border-radius:8px;background:#10b981;color:white;border:none;cursor:pointer;font-size:13px">Simpan</button>
+            <button type="button" onclick="hideAddKategori()" style="padding:6px 12px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;cursor:pointer;font-size:13px">Batal</button>
+          </div>
         </div>
         <!-- Keterangan -->
         <div class="form-group col-span-2">
@@ -471,12 +479,75 @@
     editingId = null;
   };
 
+  // ============ KATEGORI CUSTOM ============
+  const loadKategori = async () => {
+    const res = await apiFetch('/kategori');
+    if (!res?.ok) return;
+    const kategoriList = res.data?.data || [];
+    const select = document.getElementById('f-kategori');
+    const filterSelect = document.getElementById('filter-kategori');
+    const defaultKategori = ['umum','undangan','keputusan','edaran','pemberitahuan','permohonan'];
+
+    // Update form select
+    const currentVal = select.value;
+    select.innerHTML = '<option value="umum">Umum</option>';
+    defaultKategori.slice(1).forEach(k => {
+      select.innerHTML += `<option value="${k}">${k.charAt(0).toUpperCase()+k.slice(1)}</option>`;
+    });
+    kategoriList.forEach(k => {
+      if (!defaultKategori.includes(k.nama.toLowerCase())) {
+        select.innerHTML += `<option value="${k.nama}">${k.nama}</option>`;
+      }
+    });
+    if (currentVal) select.value = currentVal;
+
+    // Update filter select
+    const currentFilter = filterSelect.value;
+    filterSelect.innerHTML = '<option value="">Semua Kategori</option>';
+    defaultKategori.forEach(k => {
+      filterSelect.innerHTML += `<option value="${k}">${k.charAt(0).toUpperCase()+k.slice(1)}</option>`;
+    });
+    kategoriList.forEach(k => {
+      if (!defaultKategori.includes(k.nama.toLowerCase())) {
+        filterSelect.innerHTML += `<option value="${k.nama}">${k.nama}</option>`;
+      }
+    });
+    if (currentFilter) filterSelect.value = currentFilter;
+  };
+
+  window.showAddKategori = () => {
+    document.getElementById('add-kategori-form').style.display = 'flex';
+    document.getElementById('f-kategori-baru').focus();
+  };
+  window.hideAddKategori = () => {
+    document.getElementById('add-kategori-form').style.display = 'none';
+    document.getElementById('f-kategori-baru').value = '';
+  };
+  window.addKategori = async () => {
+    const nama = document.getElementById('f-kategori-baru').value.trim();
+    if (!nama) return;
+    const res = await apiFetch('/kategori', {
+      method: 'POST',
+      body: JSON.stringify({ nama })
+    });
+    if (res?.ok) {
+      showToast('Kategori berhasil ditambahkan', 'success');
+      hideAddKategori();
+      await loadKategori();
+      document.getElementById('f-kategori').value = nama;
+    } else {
+      showToast(res?.data?.error || 'Gagal menambahkan kategori', 'error');
+    }
+  };
+
   const resetForm = () => {
     // Isi semua field termasuk keterangan
     ['f-nomor','f-perihal','f-pengirim','f-penerima','f-keterangan','f-file-path'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
+    const thn = new Date().getFullYear();
+    document.getElementById('f-nomor').placeholder = `001/SK/${thn}`;
     document.getElementById('f-jenis').value = 'masuk';
     document.getElementById('f-kategori').value = 'umum';
     document.getElementById('f-tanggal').value = new Date().toISOString().split('T')[0];
@@ -648,6 +719,8 @@
 
   // Init
   togglePengirimPenerima();
+  document.getElementById('f-nomor').placeholder = `001/SK/${new Date().getFullYear()}`;
+  loadKategori();
   loadSurat(1);
 
   // ============ NOTIFIKASI ============

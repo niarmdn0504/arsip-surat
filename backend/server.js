@@ -17,7 +17,7 @@ app.use(helmet({
 // === RATE LIMITING - cegah brute force ===
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 menit
-  max: 10, // max 10x login gagal per 15 menit
+  max: 30, // max 30x login per 15 menit
   message: { error: 'Terlalu banyak percobaan login. Coba lagi 15 menit lagi.' },
   standardHeaders: true,
   legacyHeaders: false
@@ -62,6 +62,7 @@ app.use('/api/users', apiLimiter, require('./routes/users'));
 app.use('/api/notifikasi', apiLimiter, require('./routes/notifikasi'));
 app.use('/api/laporan', apiLimiter, require('./routes/laporan'));
 app.use('/api/pengaturan', apiLimiter, require('./routes/pengaturan'));
+app.use('/api/kategori', apiLimiter, require('./routes/kategori'));
 
 // Health check
 app.get('/api/health', (req, res) => {
