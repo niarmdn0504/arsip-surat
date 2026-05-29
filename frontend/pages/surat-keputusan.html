@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" id="favicon" href="data:">
-  <title>Arsip Surat — Sekolah</title>
+  <title>Surat Keputusan Kepala Sekolah</title>
   <!-- Supabase config untuk upload langsung dari browser -->
   <!-- GANTI dengan nilai dari Supabase dashboard > Settings > API -->
   <meta name="sb-url" content="SUPABASE_URL_KAMU">
@@ -51,8 +51,8 @@
 <header class="navbar">
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
   <div style="flex:1">
-    <div class="navbar-title" id="page-title">Arsip Surat</div>
-    <div class="navbar-sub" id="page-sub">Kelola semua surat</div>
+    <div class="navbar-title" id="page-title">Surat Keputusan Kepala Sekolah</div>
+    <div class="navbar-sub" id="page-sub">Daftar surat keputusan kepala sekolah</div>
   </div>
   <button onclick="openModalTambah()" class="btn btn-primary btn-sm">✚ <span class="hidden sm:inline">Tambah Surat</span></button>
   <!-- Notifikasi Bell -->
@@ -107,10 +107,8 @@
       </div>
 
       <!-- Filter Jenis -->
-      <select class="form-control" style="width:140px;padding:9px 12px;font-size:13px" id="filter-jenis" onchange="handleFilter()">
-        <option value="">Semua Jenis</option>
-        <option value="masuk">📥 Masuk</option>
-        <option value="keluar">📤 Keluar</option>
+      <select class="form-control" style="width:140px;padding:9px 12px;font-size:13px;display:none" id="filter-jenis" onchange="handleFilter()">
+        <option value="keputusan">📋 Keputusan</option>
       </select>
 
       <!-- Filter Kategori -->
@@ -145,17 +143,15 @@
             <th style="width:40px">#</th>
             <th>No. Surat</th>
             <th>Perihal</th>
-            <th>Jenis</th>
             <th>Kategori</th>
             <th>Tanggal</th>
-            <th>Pengirim / Tujuan</th>
             <th>Keterangan</th>
             <th>File</th>
             <th style="width:120px">Aksi</th>
           </tr>
         </thead>
         <tbody id="tbody-surat">
-          <tr><td colspan="10" style="text-align:center;padding:48px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>
+          <tr><td colspan="8" style="text-align:center;padding:48px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -176,7 +172,7 @@
 <div class="modal-overlay" id="modal-surat">
   <div class="modal" style="max-width:640px">
     <div class="modal-header">
-      <h2 class="modal-title" id="modal-title">Tambah Surat</h2>
+      <h2 class="modal-title" id="modal-title">Tambah Surat Keputusan</h2>
       <button class="btn-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
@@ -186,47 +182,24 @@
           <label class="form-label">Nomor Surat <span>*</span></label>
           <input type="text" id="f-nomor" class="form-control" placeholder="001/SK/">
         </div>
-        <!-- Jenis -->
+        <!-- Tanggal Surat Keputusan -->
         <div class="form-group col-span-2 sm:col-span-1">
-          <label class="form-label">Jenis Surat <span>*</span></label>
-          <select id="f-jenis" class="form-control" onchange="togglePengirimPenerima()">
-            <option value="masuk">📥 Surat Masuk</option>
-            <option value="keluar">📤 Surat Keluar</option>
-          </select>
+          <label class="form-label">Tanggal Surat Keputusan <span>*</span></label>
+          <input type="date" id="f-tanggal" class="form-control">
         </div>
         <!-- Perihal -->
         <div class="form-group col-span-2">
           <label class="form-label">Perihal Surat <span>*</span></label>
-          <input type="text" id="f-perihal" class="form-control" placeholder="Undangan Rapat Koordinasi...">
-        </div>
-        <!-- Pengirim -->
-        <div class="form-group" id="group-pengirim">
-          <label class="form-label" id="label-pengirim">Pengirim</label>
-          <input type="text" id="f-pengirim" class="form-control" placeholder="Nama instansi / pengirim">
-        </div>
-        <!-- Penerima -->
-        <div class="form-group" id="group-penerima">
-          <label class="form-label" id="label-penerima">Penerima / Tujuan</label>
-          <input type="text" id="f-penerima" class="form-control" placeholder="Kepada Yth...">
-        </div>
-        <!-- Tanggal Surat -->
-        <div class="form-group">
-          <label class="form-label">Tanggal Surat <span>*</span></label>
-          <input type="date" id="f-tanggal" class="form-control">
-        </div>
-        <!-- Tanggal Terima -->
-        <div class="form-group" id="group-tanggal-terima">
-          <label class="form-label">Tanggal Diterima</label>
-          <input type="date" id="f-tanggal-terima" class="form-control">
+          <input type="text" id="f-perihal" class="form-control" placeholder="Keputusan tentang...">
         </div>
         <!-- Kategori -->
         <div class="form-group">
           <label class="form-label">Kategori</label>
           <div style="display:flex;gap:6px">
             <select id="f-kategori" class="form-control" style="flex:1">
+              <option value="keputusan">Keputusan</option>
               <option value="umum">Umum</option>
               <option value="undangan">Undangan</option>
-              <option value="keputusan">Keputusan</option>
               <option value="edaran">Edaran</option>
               <option value="pemberitahuan">Pemberitahuan</option>
               <option value="permohonan">Permohonan</option>
@@ -299,6 +272,9 @@
     document.getElementById('nav-pengaturan').style.display = 'flex';
   }
 
+  // Set active nav
+  document.getElementById('nav-surat-keputusan').classList.add('active');
+
   const toggleSidebar = () => {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebar-overlay').classList.toggle('open');
@@ -314,14 +290,8 @@
   let searchTimeout = null;
   let editingId = null;
 
-  // Baca URL params
-  const urlParams = new URLSearchParams(window.location.search);
-  const paramJenis = urlParams.get('jenis');
-  if (paramJenis) {
-    document.getElementById('filter-jenis').value = paramJenis;
-    document.getElementById('page-title').textContent = paramJenis === 'masuk' ? 'Surat Masuk' : 'Surat Keluar';
-    document.getElementById('page-sub').textContent = paramJenis === 'masuk' ? 'Daftar surat masuk sekolah' : 'Daftar surat keluar sekolah';
-  }
+  // Baca URL params - selalu keputusan
+  document.getElementById('filter-jenis').value = 'keputusan';
 
   // Isi tahun filter
   const tahunNow = new Date().getFullYear();
@@ -347,11 +317,11 @@
     if (search) params.append('search', search);
 
     const tbody = document.getElementById('tbody-surat');
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:36px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:36px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>`;
 
     const res = await apiFetch(`/surat?${params}`);
     if (!res?.ok) {
-      tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">❌</div><h3>Gagal memuat data</h3></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">❌</div><h3>Gagal memuat data</h3></div></td></tr>`;
       return;
     }
 
@@ -363,7 +333,7 @@
       `Menampilkan ${((page-1)*15)+1}–${Math.min(page*15, pagination.total)} dari ${pagination.total}`;
 
     if (!data.length) {
-      tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state">
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">
         <div class="empty-icon">📭</div>
         <h3>Surat tidak ditemukan</h3>
         <p>Coba ubah filter atau kata kunci pencarian</p>
@@ -376,10 +346,8 @@
           <td>
             <div style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.perihal}">${s.perihal}</div>
           </td>
-          <td>${badgeJenis(s.jenis)}</td>
           <td>${badgeKategori(s.kategori)}</td>
           <td style="font-size:12.5px;color:#64748b;white-space:nowrap">${formatDateShort(s.tanggal_surat)}</td>
-          <td style="font-size:12.5px;color:#475569;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.jenis === 'masuk' ? (s.pengirim||'-') : (s.penerima||'-')}</td>
           <td style="font-size:12px;color:#64748b;max-width:150px">
             ${s.keterangan
               ? `<span title="${s.keterangan}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${s.keterangan}</span>`
@@ -435,7 +403,7 @@
   // ============ MODAL ============
   const openModalTambah = () => {
     editingId = null;
-    document.getElementById('modal-title').textContent = 'Tambah Surat Baru';
+    document.getElementById('modal-title').textContent = 'Tambah Surat Keputusan';
     document.getElementById('btn-submit-text').textContent = '💾 Simpan Surat';
     resetForm();
     document.getElementById('modal-surat').classList.add('open');
@@ -443,7 +411,7 @@
 
   const openModalEdit = async (id) => {
     editingId = id;
-    document.getElementById('modal-title').textContent = 'Edit Surat';
+    document.getElementById('modal-title').textContent = 'Edit Surat Keputusan';
     document.getElementById('btn-submit-text').textContent = '💾 Update Surat';
     resetForm();
 
@@ -452,13 +420,9 @@
     const s = res.data.data;
 
     document.getElementById('f-nomor').value = s.nomor_surat || '';
-    document.getElementById('f-jenis').value = s.jenis || 'masuk';
     document.getElementById('f-perihal').value = s.perihal || '';
-    document.getElementById('f-pengirim').value = s.pengirim || '';
-    document.getElementById('f-penerima').value = s.penerima || '';
     document.getElementById('f-tanggal').value = s.tanggal_surat || '';
-    document.getElementById('f-tanggal-terima').value = s.tanggal_terima || '';
-    document.getElementById('f-kategori').value = s.kategori || 'umum';
+    document.getElementById('f-kategori').value = s.kategori || 'keputusan';
     document.getElementById('f-keterangan').value = s.keterangan || '';
     document.getElementById('f-file-path').value = s.file_path || '';
 
@@ -470,7 +434,6 @@
       `;
     }
 
-    togglePengirimPenerima();
     document.getElementById('modal-surat').classList.add('open');
   };
 
@@ -542,25 +505,23 @@
   };
 
   const resetForm = () => {
-    // Isi semua field termasuk keterangan
-    ['f-nomor','f-perihal','f-pengirim','f-penerima','f-keterangan','f-file-path'].forEach(id => {
+    ['f-nomor','f-perihal','f-keterangan','f-file-path'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
     const thn = new Date().getFullYear();
     document.getElementById('f-nomor').placeholder = `001/SK/${thn}`;
-    document.getElementById('f-jenis').value = 'masuk';
-    document.getElementById('f-kategori').value = 'umum';
+    document.getElementById('f-kategori').value = 'keputusan';
     document.getElementById('f-tanggal').value = new Date().toISOString().split('T')[0];
-    document.getElementById('f-tanggal-terima').value = '';
     document.getElementById('f-file').value = '';
     document.getElementById('upload-state').innerHTML = `
       <div class="upload-icon">📄</div>
       <p><strong>Klik untuk upload</strong> atau drag & drop PDF</p>
       <p style="font-size:11.5px;color:#94a3b8;margin-top:4px">Maksimal 10MB</p>
     `;
-    togglePengirimPenerima();
   };
+
+  const togglePengirimPenerima = () => {};
 
   const togglePengirimPenerima = () => {
     const jenis = document.getElementById('f-jenis').value;
@@ -633,7 +594,6 @@
   // ============ SUBMIT SURAT ============
   const submitSurat = async () => {
     const nomor = document.getElementById('f-nomor').value.trim();
-    const jenis = document.getElementById('f-jenis').value;
     const perihal = document.getElementById('f-perihal').value.trim();
     const tanggal = document.getElementById('f-tanggal').value;
 
@@ -644,11 +604,11 @@
 
     const payload = {
       nomor_surat: nomor,
-      jenis, perihal,
-      pengirim: document.getElementById('f-pengirim').value.trim(),
-      penerima: document.getElementById('f-penerima').value.trim(),
+      jenis: 'keputusan', perihal,
+      pengirim: 'Kepala Sekolah',
+      penerima: '',
       tanggal_surat: tanggal,
-      tanggal_terima: document.getElementById('f-tanggal-terima').value || null,
+      tanggal_terima: null,
       kategori: document.getElementById('f-kategori').value,
       keterangan: document.getElementById('f-keterangan').value.trim(),
       file_path: document.getElementById('f-file-path').value || null,

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS public.users (
 CREATE TABLE IF NOT EXISTS public.surat (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nomor_surat VARCHAR(100) NOT NULL,
-    jenis VARCHAR(10) NOT NULL CHECK (jenis IN ('masuk', 'keluar')),
+    jenis VARCHAR(15) NOT NULL CHECK (jenis IN ('masuk', 'keluar', 'keputusan')),
     kategori VARCHAR(50) DEFAULT 'umum',
     perihal TEXT NOT NULL,
     pengirim VARCHAR(150),

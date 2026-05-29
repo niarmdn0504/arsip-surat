@@ -10,7 +10,7 @@ router.use(authMiddleware);
 router.get('/', async (req, res) => {
   try {
     // Validasi & sanitasi input
-    const jenis = ['masuk','keluar'].includes(req.query.jenis) ? req.query.jenis : null;
+    const jenis = ['masuk','keluar','keputusan'].includes(req.query.jenis) ? req.query.jenis : null;
     const kategori = ['umum','undangan','keputusan','edaran','pemberitahuan','permohonan'].includes(req.query.kategori) ? req.query.kategori : null;
     const tahun = req.query.tahun ? parseInt(req.query.tahun) : null;
     const page = Math.max(1, parseInt(req.query.page) || 1);
@@ -142,7 +142,7 @@ router.post('/', async (req, res) => {
     }
 
     // Validasi jenis
-    if (!['masuk','keluar'].includes(jenis)) {
+    if (!['masuk','keluar','keputusan'].includes(jenis)) {
       return res.status(400).json({ error: 'Jenis surat tidak valid.' });
     }
 
@@ -200,7 +200,7 @@ router.put('/:id', async (req, res) => {
       keterangan, file_path
     } = req.body;
 
-    if (jenis && !['masuk','keluar'].includes(jenis)) {
+    if (jenis && !['masuk','keluar','keputusan'].includes(jenis)) {
       return res.status(400).json({ error: 'Jenis surat tidak valid.' });
     }
 
