@@ -190,10 +190,11 @@ const setUserInfo = () => {
   if (avatarEl) avatarEl.textContent = user.nama?.charAt(0).toUpperCase() || 'U';
 };
 
-// Logout
+// Logout — JANGAN hapus sekolah_config agar branding tetap di-cache
 const logout = () => {
   apiFetch('/auth/logout', { method: 'POST' }).catch(() => {});
-  localStorage.clear();
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
   window.location.href = '/pages/login.html';
 };
 window.logout = logout;

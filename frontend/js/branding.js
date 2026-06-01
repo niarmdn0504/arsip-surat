@@ -12,7 +12,12 @@
 
   // === APPLY WARNA LANGSUNG (SEBELUM PAGE RENDER) ===
   // Cegah FOUC: warna biru default kelihatan dulu beberapa detik
-  const _warna = (window._savedBranding && window._savedBranding.warna) || SEKOLAH_CONFIG.warna;
+  // Pakai fallback inline (bukan SEKOLAH_CONFIG) untuk hindari TDZ
+  const _warna = (window._savedBranding && window._savedBranding.warna) || {
+    utama: '#1e3a8a',
+    utama_muda: '#1e40af',
+    aksen: '#0e7490'
+  };
   if (_warna && _warna.utama) {
     const _root = document.documentElement;
     _root.style.setProperty('--primary-dark',  _warna.utama);
