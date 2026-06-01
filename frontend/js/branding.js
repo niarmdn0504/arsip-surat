@@ -35,8 +35,30 @@
     .btn-primary, .btn-login {
       background: linear-gradient(135deg, ${_warna.utama}, ${_warna.utama_muda}) !important;
     }
+    .logo-icon {
+      background: linear-gradient(135deg, ${_warna.utama_muda}, ${_warna.aksen}) !important;
+    }
   `;
   document.head.appendChild(_style);
+
+  // === SPLASH SCREEN (logo besar di tengah, loading effect) ===
+  const _splash = document.createElement('div');
+  _splash.id = 'splash-screen';
+  const _nama = (window._savedBranding && window._savedBranding.nama_singkat) || 'SDN Palmerah 07';
+  _splash.innerHTML = `
+    <div id="splash-logo">🏫</div>
+    <div id="splash-name">${_nama}</div>
+    <div id="splash-loader"></div>
+  `;
+  _splash.style.cssText = `
+    position:fixed;inset:0;z-index:99998;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,${_warna.utama} 0%,${_warna.utama_muda} 40%,${_warna.aksen} 100%);
+    transition:opacity 0.5s ease,transform 0.5s ease;
+  `;
+  // Append langsung ke body — kalau body belum siap, gunakan documentElement
+  const _target = document.body || document.documentElement;
+  _target.appendChild(_splash);
 })();
 
 // ============================================
@@ -178,7 +200,13 @@ const terapkanBranding = async () => {
   if (window._savedBranding) _mergeConfig(window._savedBranding);
   _applyBrandingToDOM();
 
-  // 2. Selalu fetch dari API di background (LOCK ke pengaturan)
+  // 2. Tutup splash screen (logo loading di tengah)
+  setTimeout(() => {
+    const _s = document.getElementById('splash-screen');
+    if (_s) { _s.classList.add('hide'); setTimeout(() => _s.remove(), 600); }
+  }, 400);
+
+  // 3. Selalu fetch dari API di background (LOCK ke pengaturan)
   // Admin ubah di /pengaturan → semua user lain otomatis dapat perubahan
   if (window._fetchingBranding) return;
   window._fetchingBranding = true;

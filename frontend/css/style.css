@@ -82,7 +82,7 @@ body {
 
 .sidebar-logo .logo-icon {
   width: 40px; height: 40px;
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   font-size: 18px; flex-shrink: 0;
@@ -543,6 +543,39 @@ tbody tr:nth-child(10) { animation-delay: 0.20s; }
 
 /* Button press effect */
 .btn:active:not(:disabled) { transform: scale(0.97); }
+
+/* ============================================
+   SPLASH SCREEN (Loading Logo Besar)
+   ============================================ */
+#splash-screen {
+  position: fixed; inset: 0; z-index: 99998;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+#splash-screen.hide {
+  opacity: 0; transform: scale(1.05);
+  pointer-events: none;
+}
+#splash-logo {
+  font-size: 72px; margin-bottom: 16px;
+  animation: splashBounce 1.2s ease-in-out infinite;
+}
+@keyframes splashBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.1); }
+}
+#splash-name {
+  color: white; font-size: 18px; font-weight: 800;
+  letter-spacing: 1px; text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  margin-bottom: 24px;
+}
+#splash-loader {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
 
 /* ============================================
    LOGO LOADING ANIMATION
