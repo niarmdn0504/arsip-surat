@@ -41,22 +41,15 @@
   `;
   document.head.appendChild(_style);
 
-  // === SPLASH SCREEN (logo besar di tengah, loading effect) ===
+  // === SPLASH SCREEN (logo + ring spinner, bukan fullscreen merah) ===
   const _splash = document.createElement('div');
   _splash.id = 'splash-screen';
-  const _nama = (window._savedBranding && window._savedBranding.nama_singkat) || 'SDN Palmerah 07';
+  const _logoSrc = window._savedBranding && window._savedBranding.logo;
   _splash.innerHTML = `
-    <div id="splash-logo">🏫</div>
-    <div id="splash-name">${_nama}</div>
-    <div id="splash-loader"></div>
+    <div id="splash-ring">
+      <div id="splash-logo">${_logoSrc ? '<img src="'+_logoSrc+'" alt="Logo">' : '🏫'}</div>
+    </div>
   `;
-  _splash.style.cssText = `
-    position:fixed;inset:0;z-index:99998;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    background:linear-gradient(135deg,${_warna.utama} 0%,${_warna.utama_muda} 40%,${_warna.aksen} 100%);
-    transition:opacity 0.5s ease,transform 0.5s ease;
-  `;
-  // Append langsung ke body — kalau body belum siap, gunakan documentElement
   const _target = document.body || document.documentElement;
   _target.appendChild(_splash);
 })();
