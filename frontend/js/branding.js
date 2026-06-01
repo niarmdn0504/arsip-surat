@@ -9,6 +9,28 @@
       window._savedBranding = c;
     } catch(e) {}
   }
+
+  // === APPLY WARNA LANGSUNG (SEBELUM PAGE RENDER) ===
+  // Cegah FOUC: warna biru default kelihatan dulu beberapa detik
+  const _warna = (window._savedBranding && window._savedBranding.warna) || SEKOLAH_CONFIG.warna;
+  if (_warna && _warna.utama) {
+    const _root = document.documentElement;
+    _root.style.setProperty('--primary-dark',  _warna.utama);
+    _root.style.setProperty('--primary',       _warna.utama_muda);
+    _root.style.setProperty('--primary-light', _warna.utama_muda);
+    _root.style.setProperty('--accent',        _warna.aksen);
+    // Pre-render gradient CSS agar tidak ada flash biru
+    const _style = document.createElement('style');
+    _style.textContent = `
+      .gradient-bg {
+        background: linear-gradient(135deg, ${_warna.utama} 0%, ${_warna.utama_muda} 40%, ${_warna.aksen} 100%) !important;
+      }
+      .btn-primary, .btn-login {
+        background: linear-gradient(135deg, ${_warna.utama}, ${_warna.utama_muda}) !important;
+      }
+    `;
+    document.head.appendChild(_style);
+  }
 })();
 
 // ============================================

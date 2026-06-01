@@ -523,13 +523,6 @@
 
   const togglePengirimPenerima = () => {};
 
-  const togglePengirimPenerima = () => {
-    const jenis = document.getElementById('f-jenis').value;
-    document.getElementById('label-pengirim').textContent = jenis === 'masuk' ? 'Pengirim' : 'Pengirim / Dari';
-    document.getElementById('label-penerima').textContent = jenis === 'keluar' ? 'Penerima / Tujuan' : 'Penerima / Tujuan';
-    document.getElementById('group-tanggal-terima').style.display = jenis === 'masuk' ? '' : 'none';
-  };
-
   // ============ UPLOAD FILE (Langsung ke Supabase - Vercel Compatible) ============
   const handleFileSelect = async (input) => {
     if (!input.files[0]) return;
@@ -772,6 +765,27 @@
       userMenuOpen = false;
     }
   });
+
+  // Expose functions ke window supaya onclick handler di HTML bisa akses
+  window.openModalTambah = openModalTambah;
+  window.openModalEdit = openModalEdit;
+  window.closeModal = closeModal;
+  window.submitSurat = submitSurat;
+  window.hapusSurat = hapusSurat;
+  window.previewPdf = previewPdf;
+  window.closePdfModal = closePdfModal;
+  window.handleSearch = handleSearch;
+  window.handleFilter = handleFilter;
+  window.resetFilter = resetFilter;
+  window.handleDragOver = handleDragOver;
+  window.handleDrop = handleDrop;
+  window.handleFileSelect = handleFileSelect;
+  window.toggleNotif = toggleNotif;
+  window.bacaSemua = bacaSemua;
+  window.klikNotif = klikNotif;
+  window.toggleUserMenu = toggleUserMenu;
+  window.toggleSidebar = toggleSidebar;
+  window.closeSidebar = closeSidebar;
 
 </script>
 </body>
