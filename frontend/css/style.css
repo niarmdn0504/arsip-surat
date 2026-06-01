@@ -487,4 +487,60 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+/* ============================================
+   SKELETON LOADERS
+   ============================================ */
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+  border-radius: 6px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.skeleton-block {
+  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+  border-radius: 10px;
+  display: block;
+}
+
+/* ============================================
+   SMOOTH PAGE LOAD
+   ============================================ */
+.page-content {
+  animation: fadeIn 0.4s ease both;
+}
+.card {
+  animation: fadeIn 0.4s ease both;
+  animation-delay: 0.05s;
+}
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.15s; }
+.card:nth-child(4) { animation-delay: 0.2s; }
+
+/* Row stagger animation for table */
+tbody tr {
+  animation: fadeInRow 0.3s ease both;
+}
+tbody tr:nth-child(1) { animation-delay: 0.02s; }
+tbody tr:nth-child(2) { animation-delay: 0.04s; }
+tbody tr:nth-child(3) { animation-delay: 0.06s; }
+tbody tr:nth-child(4) { animation-delay: 0.08s; }
+tbody tr:nth-child(5) { animation-delay: 0.10s; }
+tbody tr:nth-child(6) { animation-delay: 0.12s; }
+tbody tr:nth-child(7) { animation-delay: 0.14s; }
+tbody tr:nth-child(8) { animation-delay: 0.16s; }
+tbody tr:nth-child(9) { animation-delay: 0.18s; }
+tbody tr:nth-child(10) { animation-delay: 0.20s; }
+
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Button press effect */
+.btn:active:not(:disabled) { transform: scale(0.97); }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }

@@ -151,7 +151,7 @@
           </tr>
         </thead>
         <tbody id="tbody-surat">
-          <tr><td colspan="8" style="text-align:center;padding:48px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>
+          <tr><td colspan="8" style="padding:20px"><div class="skeleton-block" style="height:18px;width:100%;margin-bottom:10px"></div><div class="skeleton-block" style="height:18px;width:95%;margin-bottom:10px"></div><div class="skeleton-block" style="height:18px;width:88%"></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -317,7 +317,7 @@
     if (search) params.append('search', search);
 
     const tbody = document.getElementById('tbody-surat');
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:36px"><div class="spinner spinner-dark" style="margin:0 auto"></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="padding:20px">${skeletonRow(8).replace(/<tr>|<\/tr>/g,'')}</td></tr>`;
 
     const res = await apiFetch(`/surat?${params}`);
     if (!res?.ok) {
