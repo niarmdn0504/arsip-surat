@@ -222,15 +222,22 @@ if (document.readyState === 'loading') {
   // Top loading bar (NProgress-like)
   const bar = document.createElement('div');
   bar.id = 'top-loading-bar';
-  bar.style.cssText = 'position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#dc2626,#7f1d1d);z-index:99999;transition:width 0.3s ease,opacity 0.3s ease;opacity:0;box-shadow:0 2px 8px rgba(220,38,38,0.4)';
+  const c = (window._savedBranding && window._savedBranding.warna) || {};
+  bar.style.cssText = `position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,${c.utama_muda||'#dc2626'},${c.utama||'#7f1d1d'});z-index:99999;transition:width 0.3s ease,opacity 0.3s ease;opacity:0;box-shadow:0 2px 8px rgba(220,38,38,0.4)`;
   document.body && document.body.appendChild(bar);
   if (!document.body) {
     document.addEventListener('DOMContentLoaded', () => document.body.appendChild(bar));
   }
 
-  window.startLoading = () => { bar.style.opacity = '1'; bar.style.width = '70%'; };
+  window.startLoading = () => {
+    bar.style.opacity = '1'; bar.style.width = '70%';
+    const logo = document.querySelector('.sidebar-logo');
+    if (logo) logo.classList.add('loading');
+  };
   window.finishLoading = () => {
     bar.style.width = '100%';
+    const logo = document.querySelector('.sidebar-logo');
+    if (logo) logo.classList.remove('loading');
     setTimeout(() => { bar.style.opacity = '0'; setTimeout(() => bar.style.width = '0', 300); }, 200);
   };
 

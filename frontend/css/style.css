@@ -5,11 +5,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --primary: #1e40af;
-  --primary-light: #3b82f6;
-  --primary-dark: #1e3a8a;
-  --primary-bg: #eff6ff;
-  --accent: #06b6d4;
+  --primary: #dc2626;
+  --primary-light: #dc2626;
+  --primary-dark: #7f1d1d;
+  --primary-bg: #fef2f2;
+  --accent: #b91c1c;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
@@ -543,4 +543,41 @@ tbody tr:nth-child(10) { animation-delay: 0.20s; }
 
 /* Button press effect */
 .btn:active:not(:disabled) { transform: scale(0.97); }
+
+/* ============================================
+   LOGO LOADING ANIMATION
+   ============================================ */
+.sidebar-logo.loading .logo-icon {
+  animation: logoPulse 1.2s ease-in-out infinite;
+}
+@keyframes logoPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.8; box-shadow: 0 0 0 6px rgba(220,38,38,0.15); }
+}
+.sidebar-logo .logo-icon {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* ============================================
+   RESPONSIVE NAVBAR (HP)
+   ============================================ */
+@media (max-width: 640px) {
+  .navbar-title { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+  .navbar-sub { display: none; }
+  .navbar { gap: 6px; padding: 0 12px; }
+  .navbar .btn-sm { font-size: 12px; padding: 6px 10px; }
+  .main-content { margin-left: 0; }
+  .page-content { padding: 12px; }
+  .card { padding: 14px; }
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { font-size: 12px; }
+  th, td { padding: 8px 10px; white-space: nowrap; }
+}
+
+/* Search bar responsive */
+@media (max-width: 640px) {
+  .search-bar { width: 100%; }
+  [id^="filter-"] { width: 100% !important; }
+}
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
